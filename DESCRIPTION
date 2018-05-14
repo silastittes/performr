@@ -1,8 +1,8 @@
 Package: performr
-Version: 0.0.0.9000
-Title: What the Package Does (One Line, Title Case)
-Description: What the package does (one paragraph).
-Authors@R: person("First", "Last", , "first.last@example.com", c("aut", "cre"))
+Version: 0.1
+Title: Fit probabilistic performance curve model
+Description: performr provides a number of R functions to fit (calling Stan) and describe performance curves using a specific model.
+Authors@R: person("Silas", "Tittes", , "silas.tittes@gmail.com", c("aut", "cre"))
 License: GPL (>=3)
 Encoding: UTF-8
 LazyData: true
