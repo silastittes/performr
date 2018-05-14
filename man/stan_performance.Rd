@@ -5,11 +5,10 @@
 \title{Performance curve inference with Stan}
 \usage{
 stan_performance(df, response, treatment, group_ids, file_id = NULL,
-  rseed = 123, max_treedepth = 10, iter = 2000, thin = 1,
-  adapt_delta = 0.95, chains = 4, shape1_pr_mu = 4, shape1_pr_sig = 1,
-  shape2_pr_mu = 4, shape2_pr_sig = 1, stretch_pr_mu = 0,
-  stretch_pr_sig = 1, min_pr_mu, min_pr_sig = 1, max_pr_mu,
-  max_pr_sig = 1)
+  max_treedepth = 10, iter = 2000, thin = 1, adapt_delta = 0.95,
+  chains = 4, shape1_pr_mu = 4, shape1_pr_sig = 1, shape2_pr_mu = 4,
+  shape2_pr_sig = 1, stretch_pr_mu = 0, stretch_pr_sig = 1, min_pr_mu,
+  min_pr_sig = 1, max_pr_mu, max_pr_sig = 1, ...)
 }
 \arguments{
 \item{df}{Data frame containing response, treatment, and groups of interest.}
@@ -22,8 +21,11 @@ stan_performance(df, response, treatment, group_ids, file_id = NULL,
 
 \item{file_id}{Optional file prefix to write Stan samples to (stan() sample_file argument).}
 
-\item{rseed}{random seed (default = 123).}
+\item{...}{Further arugments to pass to Stan's sampling() function.}
 }
 \description{
 Runs performance/tolerance curve model
+}
+\details{
+This function provides the interface to Stan. Arguments ending in "pr_mu" and  "pr_sig" are the mean and standard deviations of normal prior distributions.
 }
