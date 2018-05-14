@@ -7,14 +7,14 @@
 #' @param treatment the unquoted column name containing the treatment values (real values expected).
 #' @param group_ids the unquoted column name containing the fixed groups (i.e. species, populations, etc.).
 #' @param file_id Optional file prefix to write Stan samples to (stan() sample_file argument).
-#' @param rseed random seed (default = 123).
+#' @param ... Further arugments to pass to Stan's sampling() function.
+#' @details This function provides the interface to Stan. Arguments ending in "pr_mu" and  "pr_sig" are the mean and standard deviations of normal prior distributions.
 #' @export
 
 stan_performance <- function(df, response,
                              treatment,
                              group_ids,
                              file_id = NULL,
-                             rseed = 123,
                              max_treedepth = 10,
                              iter = 2000,
                              thin = 1,
@@ -29,7 +29,8 @@ stan_performance <- function(df, response,
                              min_pr_mu,
                              min_pr_sig = 1,
                              max_pr_mu,
-                             max_pr_sig = 1){
+                             max_pr_sig = 1,
+                             ...){
 
 
   response <- enquo(response)
@@ -74,7 +75,7 @@ stan_performance <- function(df, response,
       data = stan_in,
       control = list(adapt_delta = adapt_delta, max_treedepth = max_treedepth),
       iter = iter, chains = chains, thin = thin,
-      seed = rseed
+      ...
     )
   } else {
     stan_out <- sampling(
@@ -82,8 +83,7 @@ stan_performance <- function(df, response,
       data = stan_in,
       control = list(adapt_delta = adapt_delta, max_treedepth = max_treedepth),
       iter = iter, chains = chains, thin = thin,
-      sample_file = paste0(eval(substitute(file_id)), ".samples"),
-      seed = rseed
+      sample_file = paste0(eval(substitute(file_id)), ".samples"), ...
     )
   }
   stan_out
