@@ -73,27 +73,38 @@ map_performance <- function(x = seq(0, 1, length.out = 100), par_df){
 #' Constructs a tidy data frame of generated data given a set of input parameters.
 #' @import tidyverse
 #' @param x A vector of values to evaluate performance over
-#' @inheritParams performance_mu
-#' @param species_id Character string to connect to returned rows.
+#' @param par_df A data frame like the one produced by perform_df(). MUST contain columns named: draw, Species, x_min, x_max, shape1, shape2, stretch, and nu.
 #' @return A tidy data frame, containing a points along the environmental axis, and corresponding points for the performance axis, for each group and posterior draw input.
 #' @export
-posterior_predict <- function(x, shape1, shape2, stretch, x_min, x_max, nu, species_id){
+posterior_predict <- function(x, par_df){
   if(missing(x)){
     x <- seq(x_min, x_max, length.out = 100)
   }
-  mu <- performance_mu(x, shape1, shape2, stretch, x_min, x_max)
-  zero_idx <- x < x_min | x > x_max
-  mu_spp <- mu %>%
-    map_dbl(function(x){
-      rnorm(n = 1, mean = x, sd = (1+x)*1/nu) %>%
-        (function(z) ifelse(z < 0, 0, z))
-    }) %>%
-    replace(zero_idx, 0)
 
-  tibble(x = x,
-         trait = mu_spp,
-         mu = mu,
-         spp = rep(species_id, length(mu))
-  )
+  1:nrow(par_df) %>% map_df(~{
+    draw_x <- par_df$draw[.x]
+    species_id <- par_df$Species[.x]
+    x_min <- par_df$x_min[.x]
+    x_max <- par_df$x_max[.x]
+    shape1 <- par_df$shape1[.x]
+    shape2 <- par_df$shape2[.x]
+    stretch <- par_df$stretch[.x]
+    nu <- par_df$nu[.x]
+    mu <- performance_mu(x, shape1, shape2, stretch, x_min, x_max)
+    zero_idx <- x < x_min | x > x_max
+    mu_spp <- mu %>%
+      map_dbl(function(x){
+        rnorm(n = 1, mean = x, sd = (1+x)*1/nu) %>%
+          (function(z) ifelse(z < 0, 0, z))
+      }) %>%
+      replace(zero_idx, 0)
+
+    tibble(x = x,
+           trait = mu_spp,
+           mu = mu,
+           spp = rep(species_id, length(mu)),
+           draw = rep(draw_x, length(mu))
+    )
+  })
 }
 
