@@ -5,22 +5,22 @@ cache: packages
 
 latex: true
 
-env:
-  matrix: 
-    - CXX_OLEVEL=2 CXX=clang++
+#env:
+#  matrix: 
+#    - CXX_OLEVEL=2 CXX=clang++
 
-matrix:
-  include:
-    - os: linux
-      compiler: clang
-      addons:
-        apt:
-          sources: [ 'ubuntu-toolchain-r-test', 'llvm-toolchain-precise-5.0' ]        
-          packages:
-            - llvm-5.0-dev
-	  update: true
-      env:
-        - CXX_OLEVEL=2 CXX=clang++
+#matrix:
+#  include:
+#    - os: linux
+#      compiler: clang
+#      addons:
+#        apt:
+#          sources: [ 'ubuntu-toolchain-r-test', 'llvm-toolchain-precise-5.0' ]        
+#          packages:
+#            - llvm-5.0-dev
+#	  update: true
+#      env:
+#        - CXX_OLEVEL=2 CXX=clang++
 
 
 before_install:
