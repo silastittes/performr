@@ -82,7 +82,7 @@ stan_performance <- function(df, response,
       data = stan_in,
       control = list(adapt_delta = adapt_delta, max_treedepth = max_treedepth),
       iter = iter, chains = chains, thin = thin,
-      sample_file = paste0(.x, eval(substitute(file_id)), ".samples"),
+      sample_file = paste0(eval(substitute(file_id)), ".samples"),
       seed = rseed
     )
   }
