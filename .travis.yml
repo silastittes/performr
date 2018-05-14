@@ -5,10 +5,6 @@ cache: packages
 
 latex: true
 
-addons:
-   apt:
-     update: true
-
 env:
   matrix: 
     - CXX_OLEVEL=2 CXX=clang++
@@ -22,6 +18,7 @@ matrix:
           sources: [ 'ubuntu-toolchain-r-test', 'llvm-toolchain-precise-5.0' ]        
           packages:
             - llvm-5.0-dev
+	  update: true
       env:
         - CXX_OLEVEL=2 CXX=clang++
 
