@@ -4,22 +4,12 @@
 \alias{posterior_predict}
 \title{Generate perforamcne curves data from parameters}
 \usage{
-posterior_predict(x, shape1, shape2, stretch, x_min, x_max, nu, species_id)
+posterior_predict(x, par_df)
 }
 \arguments{
 \item{x}{A vector of values to evaluate performance over}
 
-\item{shape1}{First parameter controlling asymmetry along environmental axis.}
-
-\item{shape2}{Second parameter controlling asymmetry along environmental axis.}
-
-\item{stretch}{Parameter controlling stretch along the performance axis.}
-
-\item{x_min}{Parameter controlling where perforamance falls to zero below optimum.}
-
-\item{x_max}{Parameter to controlling where perforamance falls to zero above optimum.}
-
-\item{species_id}{Character string to connect to returned rows.}
+\item{par_df}{A data frame like the one produced by perform_df(). MUST contain columns named: draw, Species, x_min, x_max, shape1, shape2, stretch, and nu.}
 }
 \value{
 A tidy data frame, containing a points along the environmental axis, and corresponding points for the performance axis, for each group and posterior draw input.
