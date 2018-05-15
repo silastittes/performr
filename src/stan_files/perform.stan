@@ -36,8 +36,8 @@ data {
 parameters {
 
   //species level
-  vector<lower = 1>[numSpp] shape1;
-  vector<lower = 1>[numSpp] shape2;
+  vector<lower = 2>[numSpp] shape1;
+  vector<lower = 2>[numSpp] shape2;
   vector<lower = 0>[numSpp] stretch;
   ordered[2] min_max[numSpp];
   vector<lower = 0>[numSpp] nu;
