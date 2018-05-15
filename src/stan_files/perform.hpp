@@ -346,7 +346,7 @@ public:
         for (int j1__ = 0U; j1__ < numSpp; ++j1__)
             shape1(j1__) = vals_r__[pos__++];
         try {
-            writer__.vector_lb_unconstrain(2,shape1);
+            writer__.vector_lb_unconstrain(1,shape1);
         } catch (const std::exception& e) { 
             throw std::runtime_error(std::string("Error transforming variable shape1: ") + e.what());
         }
@@ -361,7 +361,7 @@ public:
         for (int j1__ = 0U; j1__ < numSpp; ++j1__)
             shape2(j1__) = vals_r__[pos__++];
         try {
-            writer__.vector_lb_unconstrain(2,shape2);
+            writer__.vector_lb_unconstrain(1,shape2);
         } catch (const std::exception& e) { 
             throw std::runtime_error(std::string("Error transforming variable shape2: ") + e.what());
         }
@@ -526,16 +526,16 @@ public:
             Eigen::Matrix<T__,Eigen::Dynamic,1>  shape1;
             (void) shape1;  // dummy to suppress unused var warning
             if (jacobian__)
-                shape1 = in__.vector_lb_constrain(2,numSpp,lp__);
+                shape1 = in__.vector_lb_constrain(1,numSpp,lp__);
             else
-                shape1 = in__.vector_lb_constrain(2,numSpp);
+                shape1 = in__.vector_lb_constrain(1,numSpp);
 
             Eigen::Matrix<T__,Eigen::Dynamic,1>  shape2;
             (void) shape2;  // dummy to suppress unused var warning
             if (jacobian__)
-                shape2 = in__.vector_lb_constrain(2,numSpp,lp__);
+                shape2 = in__.vector_lb_constrain(1,numSpp,lp__);
             else
-                shape2 = in__.vector_lb_constrain(2,numSpp);
+                shape2 = in__.vector_lb_constrain(1,numSpp);
 
             Eigen::Matrix<T__,Eigen::Dynamic,1>  stretch;
             (void) stretch;  // dummy to suppress unused var warning
@@ -793,8 +793,8 @@ public:
         static const char* function__ = "model_perform_namespace::write_array";
         (void) function__;  // dummy to suppress unused var warning
         // read-transform, write parameters
-        vector_d shape1 = in__.vector_lb_constrain(2,numSpp);
-        vector_d shape2 = in__.vector_lb_constrain(2,numSpp);
+        vector_d shape1 = in__.vector_lb_constrain(1,numSpp);
+        vector_d shape2 = in__.vector_lb_constrain(1,numSpp);
         vector_d stretch = in__.vector_lb_constrain(0,numSpp);
         vector<vector_d> min_max;
         size_t dim_min_max_0__ = numSpp;
