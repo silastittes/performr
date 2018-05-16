@@ -30,6 +30,7 @@ data {
 	real min_pr_sig;
 	real max_pr_mu;
 	real max_pr_sig;
+	real nu_pr_shape;
 }
 
 
@@ -83,7 +84,7 @@ model {
 
   mu_nu ~ normal(0, 1);
   //nu ~ normal(mu_nu, 1);
-  nu ~ gamma(10, mu_nu);
+  nu ~ gamma(nu_pr_shape, mu_nu);
 
   //assume equal variance help?
   //nu ~ gamma(10, 1);

@@ -26,6 +26,7 @@ stan_performance <- function(df, response,
                              shape2_pr_sig = 1,
                              stretch_pr_mu = 0,
                              stretch_pr_sig = 1,
+                             nu_pr_shape = 5,
                              min_pr_mu,
                              min_pr_sig = 1,
                              max_pr_mu,
@@ -66,7 +67,8 @@ stan_performance <- function(df, response,
     min_pr_mu = min_pr_mu,
     min_pr_sig = min_pr_sig,
     max_pr_mu = max_pr_mu ,
-    max_pr_sig = max_pr_sig
+    max_pr_sig = max_pr_sig,
+    nu_pr_shape = nu_pr_shape
   )
 
   if(is.null(file_id)){
