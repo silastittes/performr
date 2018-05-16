@@ -704,7 +704,7 @@ public:
                 current_statement_begin__ = 98;
                 stan::math::assign(get_base1_lhs(mu,n,"mu",1), exp(perform_mu(get_base1(x,n,"x",1),get_base1(shape1,get_base1(sppint,n,"sppint",1),"shape1",1),get_base1(shape2,get_base1(sppint,n,"sppint",1),"shape2",1),get_base1(stretch,get_base1(sppint,n,"sppint",1),"stretch",1),get_base1(x_min,get_base1(sppint,n,"sppint",1),"x_min",1),get_base1(x_max,get_base1(sppint,n,"sppint",1),"x_max",1), pstream__)));
                 current_statement_begin__ = 105;
-                lp_accum__.add(normal_log(get_base1(y,n,"y",1),get_base1(mu,n,"mu",1),((1 + pow(get_base1(mu,n,"mu",1),2)) * (1 / get_base1(nu,get_base1(sppint,n,"sppint",1),"nu",1)))));
+                lp_accum__.add(normal_log(get_base1(y,n,"y",1),get_base1(mu,n,"mu",1),(pow((1 + get_base1(mu,n,"mu",1)),2) * (1 / get_base1(nu,get_base1(sppint,n,"sppint",1),"nu",1)))));
             }
             }
 
