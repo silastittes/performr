@@ -100,8 +100,8 @@ model {
     stretch[sppint[n]],
     x_min[sppint[n]],
     x_max[sppint[n]]));
-    //target += normal_lpdf(y[n] | mu[n], mu[n] + nu[sppint[n]]);
-    target += normal_lpdf( y[n] | mu[n], (1+mu[n])*(1/nu[sppint[n]]));
+    //target += normal_lpdf( y[n] | mu[n], (1+mu[n])*(1/nu[sppint[n]]));
+    target += normal_lpdf( y[n] | mu[n], (1 + pow(mu[n],2))*(1/nu[sppint[n]]));
     }
 
 }
