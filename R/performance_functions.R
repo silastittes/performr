@@ -94,7 +94,7 @@ posterior_predict <- function(x, par_df){
     zero_idx <- x < x_min | x > x_max
     mu_spp <- mu %>%
       map_dbl(function(x){
-        rnorm(n = 1, mean = x, sd = (1+x^2)*1/nu) %>%
+        rnorm(n = 1, mean = x, sd = (1+x)*1/nu) %>%
           (function(z) ifelse(z < 0, 0, z))
       }) %>%
       replace(zero_idx, 0)
