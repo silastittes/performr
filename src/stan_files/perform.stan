@@ -48,8 +48,8 @@ parameters {
   real mu_shape2;
   real mu_stretch;
 
-  //real mu_min;
-  //real mu_max;
+  real mu_min;
+  real mu_max;
   //real <lower=0> mu_nu;
 
 
@@ -59,8 +59,8 @@ transformed parameters{
   vector[numSpp] x_min;
   vector[numSpp] x_max;
   for(i in 1:numSpp){
-    x_min[i] = min_max[i][1];
-    x_max[i] = min_max[i][2];
+    x_min[i] = min_max[i][1] * mu_min;
+    x_max[i] = min_max[i][2] * mu_max;
   }
 }
 
@@ -77,19 +77,18 @@ model {
   mu_stretch ~ normal(stretch_pr_mu, stretch_pr_sig);
   stretch ~ normal(mu_stretch, 1);
 
-  //mu_min ~ normal(min_pr_mu, min_pr_sig);
-
-  //mu_max ~ normal(max_pr_mu, max_pr_sig);
+  mu_min ~ normal(min_pr_mu, min_pr_sig);
+  mu_max ~ normal(max_pr_mu, max_pr_sig);
 
   //mu_nu ~ normal(0, 1);
   nu ~ gamma(nu_pr_shape, nu_pr_scale);
 
-/*
+
   for(i in 1:numSpp){
-    min_max[i][1] ~ normal(mu_min, 1);
-    min_max[i][2] ~ normal(mu_max, 1);
+    min_max[i][1] ~ normal(0, 1);
+    min_max[i][2] ~ normal(0, 1);
   }
-*/
+
 
 
   for (n in 1:N) {

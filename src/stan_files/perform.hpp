@@ -40,7 +40,7 @@ static int current_statement_begin__;
 stan::io::program_reader prog_reader__() {
     stan::io::program_reader reader;
     reader.add_event(0, 0, "start", "model_perform");
-    reader.add_event(105, 105, "end", "model_perform");
+    reader.add_event(104, 104, "end", "model_perform");
     return reader;
 }
 
@@ -331,6 +331,10 @@ public:
             ++num_params_r__;
             current_statement_begin__ = 49;
             ++num_params_r__;
+            current_statement_begin__ = 51;
+            ++num_params_r__;
+            current_statement_begin__ = 52;
+            ++num_params_r__;
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(e, current_statement_begin__, prog_reader__());
             // Next line prevents compiler griping about no return
@@ -468,6 +472,32 @@ public:
             throw std::runtime_error(std::string("Error transforming variable mu_stretch: ") + e.what());
         }
 
+        if (!(context__.contains_r("mu_min")))
+            throw std::runtime_error("variable mu_min missing");
+        vals_r__ = context__.vals_r("mu_min");
+        pos__ = 0U;
+        context__.validate_dims("initialization", "mu_min", "double", context__.to_vec());
+        double mu_min(0);
+        mu_min = vals_r__[pos__++];
+        try {
+            writer__.scalar_unconstrain(mu_min);
+        } catch (const std::exception& e) { 
+            throw std::runtime_error(std::string("Error transforming variable mu_min: ") + e.what());
+        }
+
+        if (!(context__.contains_r("mu_max")))
+            throw std::runtime_error("variable mu_max missing");
+        vals_r__ = context__.vals_r("mu_max");
+        pos__ = 0U;
+        context__.validate_dims("initialization", "mu_max", "double", context__.to_vec());
+        double mu_max(0);
+        mu_max = vals_r__[pos__++];
+        try {
+            writer__.scalar_unconstrain(mu_max);
+        } catch (const std::exception& e) { 
+            throw std::runtime_error(std::string("Error transforming variable mu_max: ") + e.what());
+        }
+
         params_r__ = writer__.data_r();
         params_i__ = writer__.data_i();
     }
@@ -558,6 +588,20 @@ public:
             else
                 mu_stretch = in__.scalar_constrain();
 
+            T__ mu_min;
+            (void) mu_min;  // dummy to suppress unused var warning
+            if (jacobian__)
+                mu_min = in__.scalar_constrain(lp__);
+            else
+                mu_min = in__.scalar_constrain();
+
+            T__ mu_max;
+            (void) mu_max;  // dummy to suppress unused var warning
+            if (jacobian__)
+                mu_max = in__.scalar_constrain(lp__);
+            else
+                mu_max = in__.scalar_constrain();
+
 
             // transformed parameters
             current_statement_begin__ = 59;
@@ -580,9 +624,9 @@ public:
             for (int i = 1; i <= numSpp; ++i) {
 
                 current_statement_begin__ = 62;
-                stan::math::assign(get_base1_lhs(x_min,i,"x_min",1), get_base1(get_base1(min_max,i,"min_max",1),1,"min_max",2));
+                stan::math::assign(get_base1_lhs(x_min,i,"x_min",1), (get_base1(get_base1(min_max,i,"min_max",1),1,"min_max",2) * mu_min));
                 current_statement_begin__ = 63;
-                stan::math::assign(get_base1_lhs(x_max,i,"x_max",1), get_base1(get_base1(min_max,i,"min_max",1),2,"min_max",2));
+                stan::math::assign(get_base1_lhs(x_max,i,"x_max",1), (get_base1(get_base1(min_max,i,"min_max",1),2,"min_max",2) * mu_max));
             }
 
             // validate transformed parameters
@@ -629,14 +673,26 @@ public:
             lp_accum__.add(normal_log<propto__>(mu_stretch, stretch_pr_mu, stretch_pr_sig));
             current_statement_begin__ = 78;
             lp_accum__.add(normal_log<propto__>(stretch, mu_stretch, 1));
-            current_statement_begin__ = 85;
+            current_statement_begin__ = 80;
+            lp_accum__.add(normal_log<propto__>(mu_min, min_pr_mu, min_pr_sig));
+            current_statement_begin__ = 81;
+            lp_accum__.add(normal_log<propto__>(mu_max, max_pr_mu, max_pr_sig));
+            current_statement_begin__ = 84;
             lp_accum__.add(gamma_log<propto__>(nu, nu_pr_shape, nu_pr_scale));
-            current_statement_begin__ = 95;
+            current_statement_begin__ = 87;
+            for (int i = 1; i <= numSpp; ++i) {
+
+                current_statement_begin__ = 88;
+                lp_accum__.add(normal_log<propto__>(get_base1(get_base1(min_max,i,"min_max",1),1,"min_max",2), 0, 1));
+                current_statement_begin__ = 89;
+                lp_accum__.add(normal_log<propto__>(get_base1(get_base1(min_max,i,"min_max",1),2,"min_max",2), 0, 1));
+            }
+            current_statement_begin__ = 94;
             for (int n = 1; n <= N; ++n) {
 
-                current_statement_begin__ = 96;
+                current_statement_begin__ = 95;
                 stan::math::assign(get_base1_lhs(mu,n,"mu",1), exp(perform_mu(get_base1(x,n,"x",1),get_base1(shape1,get_base1(sppint,n,"sppint",1),"shape1",1),get_base1(shape2,get_base1(sppint,n,"sppint",1),"shape2",1),get_base1(stretch,get_base1(sppint,n,"sppint",1),"stretch",1),get_base1(x_min,get_base1(sppint,n,"sppint",1),"x_min",1),get_base1(x_max,get_base1(sppint,n,"sppint",1),"x_max",1), pstream__)));
-                current_statement_begin__ = 102;
+                current_statement_begin__ = 101;
                 lp_accum__.add(normal_log(get_base1(y,n,"y",1),get_base1(mu,n,"mu",1),(pow((1 + get_base1(mu,n,"mu",1)),2) * (1 / get_base1(nu,get_base1(sppint,n,"sppint",1),"nu",1)))));
             }
             }
@@ -674,6 +730,8 @@ public:
         names__.push_back("mu_shape1");
         names__.push_back("mu_shape2");
         names__.push_back("mu_stretch");
+        names__.push_back("mu_min");
+        names__.push_back("mu_max");
         names__.push_back("x_min");
         names__.push_back("x_max");
     }
@@ -697,6 +755,10 @@ public:
         dimss__.push_back(dims__);
         dims__.resize(0);
         dims__.push_back(numSpp);
+        dimss__.push_back(dims__);
+        dims__.resize(0);
+        dimss__.push_back(dims__);
+        dims__.resize(0);
         dimss__.push_back(dims__);
         dims__.resize(0);
         dimss__.push_back(dims__);
@@ -737,6 +799,8 @@ public:
         double mu_shape1 = in__.scalar_constrain();
         double mu_shape2 = in__.scalar_constrain();
         double mu_stretch = in__.scalar_constrain();
+        double mu_min = in__.scalar_constrain();
+        double mu_max = in__.scalar_constrain();
             for (int k_0__ = 0; k_0__ < numSpp; ++k_0__) {
             vars__.push_back(shape1[k_0__]);
             }
@@ -757,6 +821,8 @@ public:
         vars__.push_back(mu_shape1);
         vars__.push_back(mu_shape2);
         vars__.push_back(mu_stretch);
+        vars__.push_back(mu_min);
+        vars__.push_back(mu_max);
 
         if (!include_tparams__) return;
         // declare and define transformed parameters
@@ -788,9 +854,9 @@ public:
             for (int i = 1; i <= numSpp; ++i) {
 
                 current_statement_begin__ = 62;
-                stan::math::assign(get_base1_lhs(x_min,i,"x_min",1), get_base1(get_base1(min_max,i,"min_max",1),1,"min_max",2));
+                stan::math::assign(get_base1_lhs(x_min,i,"x_min",1), (get_base1(get_base1(min_max,i,"min_max",1),1,"min_max",2) * mu_min));
                 current_statement_begin__ = 63;
-                stan::math::assign(get_base1_lhs(x_max,i,"x_max",1), get_base1(get_base1(min_max,i,"min_max",1),2,"min_max",2));
+                stan::math::assign(get_base1_lhs(x_max,i,"x_max",1), (get_base1(get_base1(min_max,i,"min_max",1),2,"min_max",2) * mu_max));
             }
 
             // validate transformed parameters
@@ -883,6 +949,12 @@ public:
         param_name_stream__.str(std::string());
         param_name_stream__ << "mu_stretch";
         param_names__.push_back(param_name_stream__.str());
+        param_name_stream__.str(std::string());
+        param_name_stream__ << "mu_min";
+        param_names__.push_back(param_name_stream__.str());
+        param_name_stream__.str(std::string());
+        param_name_stream__ << "mu_max";
+        param_names__.push_back(param_name_stream__.str());
 
         if (!include_gqs__ && !include_tparams__) return;
         for (int k_0__ = 1; k_0__ <= numSpp; ++k_0__) {
@@ -939,6 +1011,12 @@ public:
         param_names__.push_back(param_name_stream__.str());
         param_name_stream__.str(std::string());
         param_name_stream__ << "mu_stretch";
+        param_names__.push_back(param_name_stream__.str());
+        param_name_stream__.str(std::string());
+        param_name_stream__ << "mu_min";
+        param_names__.push_back(param_name_stream__.str());
+        param_name_stream__.str(std::string());
+        param_name_stream__ << "mu_max";
         param_names__.push_back(param_name_stream__.str());
 
         if (!include_gqs__ && !include_tparams__) return;
