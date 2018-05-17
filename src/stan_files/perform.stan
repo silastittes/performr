@@ -41,7 +41,7 @@ parameters {
   vector<lower = 2>[numSpp] shape1;
   vector<lower = 2>[numSpp] shape2;
   vector<lower = 0>[numSpp] stretch;
-  ordered[2] min_max[numSpp];
+  //ordered[2] min_max[numSpp];
   vector<lower = 0>[numSpp] nu;
 
   real mu_shape1;
@@ -52,17 +52,22 @@ parameters {
   real mu_max;
   real <lower=0> mu_nu;
 
+  vector[numSpp] x_min;
+  vector[numSpp] x_max;
 
 }
 
+/*
 transformed parameters{
   vector[numSpp] x_min;
   vector[numSpp] x_max;
+
   for(i in 1:numSpp){
     x_min[i] = min_max[i][1] * mu_min;
     x_max[i] = min_max[i][2] * mu_max;
   }
 }
+*/
 
 model {
 
@@ -83,13 +88,15 @@ model {
   mu_nu ~ normal(nu_pr_scale, 1);
   nu ~ gamma(nu_pr_shape, mu_nu);
 
+  x_min ~ normal(mu_min, 1);
+  x_max ~ normal(mu_max, 1);
 
+/*
   for(i in 1:numSpp){
     min_max[i][1] ~ normal(0, 1);
     min_max[i][2] ~ normal(0, 1);
   }
-
-
+*/
 
   for (n in 1:N) {
     mu[n] = exp(perform_mu(x[n],
