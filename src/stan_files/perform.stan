@@ -49,7 +49,7 @@ parameters {
   real mu_stretch;
   real mu_min;
   real mu_max;
-  real <lower=0> mu_nu;
+  //real <lower=0> mu_nu;
 
 
 }
@@ -80,8 +80,8 @@ model {
 
   mu_max ~ normal(max_pr_mu, max_pr_sig);
 
-  mu_nu ~ normal(0, 1);
-  nu ~ gamma(nu_pr_shape, mu_nu*nu_pr_scale);
+  //mu_nu ~ normal(0, 1);
+  nu ~ gamma(nu_pr_shape, nu_pr_scale);
 
   for(i in 1:numSpp){
     min_max[i][1] ~ normal(mu_min, 1);
