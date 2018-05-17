@@ -30,7 +30,8 @@ data {
 	real min_pr_sig;
 	real max_pr_mu;
 	real max_pr_sig;
-	real nu_pr_shape;
+	real <lower = 0> nu_pr_shape;
+	real <lower = 0> nu_pr_scale;
 }
 
 
@@ -87,7 +88,7 @@ model {
   //nu ~ gamma(nu_pr_shape, mu_nu);
 
   //assume equal variance help?
-  nu ~ gamma(nu_pr_shape, 1);
+  nu ~ gamma(nu_pr_shape, nu_pr_scale);
 
   for(i in 1:numSpp){
     min_max[i][1] ~ normal(mu_min, 1);
