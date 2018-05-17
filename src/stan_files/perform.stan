@@ -49,7 +49,7 @@ parameters {
   real mu_stretch;
   real mu_min;
   real mu_max;
-  real <lower=0> mu_nu;
+  //real <lower=0> mu_nu;
 
 
 }
@@ -82,12 +82,12 @@ model {
   mu_max ~ normal(max_pr_mu, max_pr_sig);
   //e ~ normal(0, );
 
-  mu_nu ~ normal(0, 1);
+  //mu_nu ~ normal(0, 1);
   //nu ~ normal(mu_nu, 1);
-  nu ~ gamma(nu_pr_shape, mu_nu);
+  //nu ~ gamma(nu_pr_shape, mu_nu);
 
   //assume equal variance help?
-  //nu ~ gamma(10, 1);
+  nu ~ gamma(5, 1);
 
   for(i in 1:numSpp){
     min_max[i][1] ~ normal(mu_min, 1);
