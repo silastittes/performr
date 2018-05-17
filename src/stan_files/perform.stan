@@ -87,7 +87,7 @@ model {
   //nu ~ gamma(nu_pr_shape, mu_nu);
 
   //assume equal variance help?
-  nu ~ gamma(5, 1);
+  nu ~ gamma(nu_pr_shape, 1);
 
   for(i in 1:numSpp){
     min_max[i][1] ~ normal(mu_min, 1);

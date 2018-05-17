@@ -668,7 +668,7 @@ public:
             current_statement_begin__ = 82;
             lp_accum__.add(normal_log<propto__>(mu_max, max_pr_mu, max_pr_sig));
             current_statement_begin__ = 90;
-            lp_accum__.add(gamma_log<propto__>(nu, 5, 1));
+            lp_accum__.add(gamma_log<propto__>(nu, nu_pr_shape, 1));
             current_statement_begin__ = 92;
             for (int i = 1; i <= numSpp; ++i) {
 
