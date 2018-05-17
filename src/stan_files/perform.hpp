@@ -40,7 +40,7 @@ static int current_statement_begin__;
 stan::io::program_reader prog_reader__() {
     stan::io::program_reader reader;
     reader.add_event(0, 0, "start", "model_perform");
-    reader.add_event(109, 109, "end", "model_perform");
+    reader.add_event(101, 101, "end", "model_perform");
     return reader;
 }
 
@@ -325,6 +325,8 @@ public:
             current_statement_begin__ = 45;
             validate_non_negative_index("nu", "numSpp", numSpp);
             num_params_r__ += numSpp;
+            current_statement_begin__ = 47;
+            ++num_params_r__;
             current_statement_begin__ = 48;
             ++num_params_r__;
             current_statement_begin__ = 49;
@@ -498,6 +500,19 @@ public:
             throw std::runtime_error(std::string("Error transforming variable mu_max: ") + e.what());
         }
 
+        if (!(context__.contains_r("mu_nu")))
+            throw std::runtime_error("variable mu_nu missing");
+        vals_r__ = context__.vals_r("mu_nu");
+        pos__ = 0U;
+        context__.validate_dims("initialization", "mu_nu", "double", context__.to_vec());
+        double mu_nu(0);
+        mu_nu = vals_r__[pos__++];
+        try {
+            writer__.scalar_lb_unconstrain(0,mu_nu);
+        } catch (const std::exception& e) { 
+            throw std::runtime_error(std::string("Error transforming variable mu_nu: ") + e.what());
+        }
+
         params_r__ = writer__.data_r();
         params_i__ = writer__.data_i();
     }
@@ -602,16 +617,23 @@ public:
             else
                 mu_max = in__.scalar_constrain();
 
+            T__ mu_nu;
+            (void) mu_nu;  // dummy to suppress unused var warning
+            if (jacobian__)
+                mu_nu = in__.scalar_lb_constrain(0,lp__);
+            else
+                mu_nu = in__.scalar_lb_constrain(0);
+
 
             // transformed parameters
-            current_statement_begin__ = 59;
+            current_statement_begin__ = 58;
             validate_non_negative_index("x_min", "numSpp", numSpp);
             Eigen::Matrix<T__,Eigen::Dynamic,1>  x_min(static_cast<Eigen::VectorXd::Index>(numSpp));
             (void) x_min;  // dummy to suppress unused var warning
 
             stan::math::initialize(x_min, DUMMY_VAR__);
             stan::math::fill(x_min,DUMMY_VAR__);
-            current_statement_begin__ = 60;
+            current_statement_begin__ = 59;
             validate_non_negative_index("x_max", "numSpp", numSpp);
             Eigen::Matrix<T__,Eigen::Dynamic,1>  x_max(static_cast<Eigen::VectorXd::Index>(numSpp));
             (void) x_max;  // dummy to suppress unused var warning
@@ -620,12 +642,12 @@ public:
             stan::math::fill(x_max,DUMMY_VAR__);
 
 
-            current_statement_begin__ = 61;
+            current_statement_begin__ = 60;
             for (int i = 1; i <= numSpp; ++i) {
 
-                current_statement_begin__ = 62;
+                current_statement_begin__ = 61;
                 stan::math::assign(get_base1_lhs(x_min,i,"x_min",1), get_base1(get_base1(min_max,i,"min_max",1),1,"min_max",2));
-                current_statement_begin__ = 63;
+                current_statement_begin__ = 62;
                 stan::math::assign(get_base1_lhs(x_max,i,"x_max",1), get_base1(get_base1(min_max,i,"min_max",1),2,"min_max",2));
             }
 
@@ -647,12 +669,12 @@ public:
 
             const char* function__ = "validate transformed params";
             (void) function__;  // dummy to suppress unused var warning
+            current_statement_begin__ = 58;
             current_statement_begin__ = 59;
-            current_statement_begin__ = 60;
 
             // model body
             {
-            current_statement_begin__ = 69;
+            current_statement_begin__ = 68;
             validate_non_negative_index("mu", "N", N);
             Eigen::Matrix<T__,Eigen::Dynamic,1>  mu(static_cast<Eigen::VectorXd::Index>(N));
             (void) mu;  // dummy to suppress unused var warning
@@ -661,38 +683,40 @@ public:
             stan::math::fill(mu,DUMMY_VAR__);
 
 
-            current_statement_begin__ = 71;
+            current_statement_begin__ = 70;
             lp_accum__.add(normal_log<propto__>(mu_shape1, shape1_pr_mu, shape1_pr_sig));
-            current_statement_begin__ = 72;
+            current_statement_begin__ = 71;
             lp_accum__.add(normal_log<propto__>(shape1, mu_shape1, 1));
-            current_statement_begin__ = 74;
+            current_statement_begin__ = 73;
             lp_accum__.add(normal_log<propto__>(mu_shape2, shape2_pr_mu, shape2_pr_sig));
-            current_statement_begin__ = 75;
+            current_statement_begin__ = 74;
             lp_accum__.add(normal_log<propto__>(shape2, mu_shape2, 1));
-            current_statement_begin__ = 77;
+            current_statement_begin__ = 76;
             lp_accum__.add(normal_log<propto__>(mu_stretch, stretch_pr_mu, stretch_pr_sig));
-            current_statement_begin__ = 78;
+            current_statement_begin__ = 77;
             lp_accum__.add(normal_log<propto__>(stretch, mu_stretch, 1));
-            current_statement_begin__ = 80;
+            current_statement_begin__ = 79;
             lp_accum__.add(normal_log<propto__>(mu_min, min_pr_mu, min_pr_sig));
-            current_statement_begin__ = 83;
+            current_statement_begin__ = 81;
             lp_accum__.add(normal_log<propto__>(mu_max, max_pr_mu, max_pr_sig));
-            current_statement_begin__ = 91;
-            lp_accum__.add(gamma_log<propto__>(nu, nu_pr_shape, nu_pr_scale));
-            current_statement_begin__ = 93;
+            current_statement_begin__ = 83;
+            lp_accum__.add(normal_log<propto__>(mu_nu, 0, 1));
+            current_statement_begin__ = 84;
+            lp_accum__.add(gamma_log<propto__>(nu, nu_pr_shape, (mu_nu * nu_pr_scale)));
+            current_statement_begin__ = 86;
             for (int i = 1; i <= numSpp; ++i) {
 
-                current_statement_begin__ = 94;
+                current_statement_begin__ = 87;
                 lp_accum__.add(normal_log<propto__>(get_base1(get_base1(min_max,i,"min_max",1),1,"min_max",2), mu_min, 1));
-                current_statement_begin__ = 95;
+                current_statement_begin__ = 88;
                 lp_accum__.add(normal_log<propto__>(get_base1(get_base1(min_max,i,"min_max",1),2,"min_max",2), mu_max, 1));
             }
-            current_statement_begin__ = 98;
+            current_statement_begin__ = 91;
             for (int n = 1; n <= N; ++n) {
 
-                current_statement_begin__ = 99;
+                current_statement_begin__ = 92;
                 stan::math::assign(get_base1_lhs(mu,n,"mu",1), exp(perform_mu(get_base1(x,n,"x",1),get_base1(shape1,get_base1(sppint,n,"sppint",1),"shape1",1),get_base1(shape2,get_base1(sppint,n,"sppint",1),"shape2",1),get_base1(stretch,get_base1(sppint,n,"sppint",1),"stretch",1),get_base1(x_min,get_base1(sppint,n,"sppint",1),"x_min",1),get_base1(x_max,get_base1(sppint,n,"sppint",1),"x_max",1), pstream__)));
-                current_statement_begin__ = 106;
+                current_statement_begin__ = 98;
                 lp_accum__.add(normal_log(get_base1(y,n,"y",1),get_base1(mu,n,"mu",1),(pow((1 + get_base1(mu,n,"mu",1)),2) * (1 / get_base1(nu,get_base1(sppint,n,"sppint",1),"nu",1)))));
             }
             }
@@ -732,6 +756,7 @@ public:
         names__.push_back("mu_stretch");
         names__.push_back("mu_min");
         names__.push_back("mu_max");
+        names__.push_back("mu_nu");
         names__.push_back("x_min");
         names__.push_back("x_max");
     }
@@ -755,6 +780,8 @@ public:
         dimss__.push_back(dims__);
         dims__.resize(0);
         dims__.push_back(numSpp);
+        dimss__.push_back(dims__);
+        dims__.resize(0);
         dimss__.push_back(dims__);
         dims__.resize(0);
         dimss__.push_back(dims__);
@@ -801,6 +828,7 @@ public:
         double mu_stretch = in__.scalar_constrain();
         double mu_min = in__.scalar_constrain();
         double mu_max = in__.scalar_constrain();
+        double mu_nu = in__.scalar_lb_constrain(0);
             for (int k_0__ = 0; k_0__ < numSpp; ++k_0__) {
             vars__.push_back(shape1[k_0__]);
             }
@@ -823,6 +851,7 @@ public:
         vars__.push_back(mu_stretch);
         vars__.push_back(mu_min);
         vars__.push_back(mu_max);
+        vars__.push_back(mu_nu);
 
         if (!include_tparams__) return;
         // declare and define transformed parameters
@@ -834,14 +863,14 @@ public:
         (void) DUMMY_VAR__;  // suppress unused var warning
 
         try {
-            current_statement_begin__ = 59;
+            current_statement_begin__ = 58;
             validate_non_negative_index("x_min", "numSpp", numSpp);
             vector_d x_min(static_cast<Eigen::VectorXd::Index>(numSpp));
             (void) x_min;  // dummy to suppress unused var warning
 
             stan::math::initialize(x_min, std::numeric_limits<double>::quiet_NaN());
             stan::math::fill(x_min,DUMMY_VAR__);
-            current_statement_begin__ = 60;
+            current_statement_begin__ = 59;
             validate_non_negative_index("x_max", "numSpp", numSpp);
             vector_d x_max(static_cast<Eigen::VectorXd::Index>(numSpp));
             (void) x_max;  // dummy to suppress unused var warning
@@ -850,18 +879,18 @@ public:
             stan::math::fill(x_max,DUMMY_VAR__);
 
 
-            current_statement_begin__ = 61;
+            current_statement_begin__ = 60;
             for (int i = 1; i <= numSpp; ++i) {
 
-                current_statement_begin__ = 62;
+                current_statement_begin__ = 61;
                 stan::math::assign(get_base1_lhs(x_min,i,"x_min",1), get_base1(get_base1(min_max,i,"min_max",1),1,"min_max",2));
-                current_statement_begin__ = 63;
+                current_statement_begin__ = 62;
                 stan::math::assign(get_base1_lhs(x_max,i,"x_max",1), get_base1(get_base1(min_max,i,"min_max",1),2,"min_max",2));
             }
 
             // validate transformed parameters
+            current_statement_begin__ = 58;
             current_statement_begin__ = 59;
-            current_statement_begin__ = 60;
 
             // write transformed parameters
             for (int k_0__ = 0; k_0__ < numSpp; ++k_0__) {
@@ -955,6 +984,9 @@ public:
         param_name_stream__.str(std::string());
         param_name_stream__ << "mu_max";
         param_names__.push_back(param_name_stream__.str());
+        param_name_stream__.str(std::string());
+        param_name_stream__ << "mu_nu";
+        param_names__.push_back(param_name_stream__.str());
 
         if (!include_gqs__ && !include_tparams__) return;
         for (int k_0__ = 1; k_0__ <= numSpp; ++k_0__) {
@@ -1017,6 +1049,9 @@ public:
         param_names__.push_back(param_name_stream__.str());
         param_name_stream__.str(std::string());
         param_name_stream__ << "mu_max";
+        param_names__.push_back(param_name_stream__.str());
+        param_name_stream__.str(std::string());
+        param_name_stream__ << "mu_nu";
         param_names__.push_back(param_name_stream__.str());
 
         if (!include_gqs__ && !include_tparams__) return;

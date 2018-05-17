@@ -43,14 +43,13 @@ parameters {
   vector<lower = 0>[numSpp] stretch;
   ordered[2] min_max[numSpp];
   vector<lower = 0>[numSpp] nu;
-  //real <lower = 0> nu;
 
   real mu_shape1;
   real mu_shape2;
   real mu_stretch;
   real mu_min;
   real mu_max;
-  //real <lower=0> mu_nu;
+  real <lower=0> mu_nu;
 
 
 }
@@ -78,17 +77,11 @@ model {
   stretch ~ normal(mu_stretch, 1);
 
   mu_min ~ normal(min_pr_mu, min_pr_sig);
-  //d ~ normal(0, );
 
   mu_max ~ normal(max_pr_mu, max_pr_sig);
-  //e ~ normal(0, );
 
-  //mu_nu ~ normal(0, 1);
-  //nu ~ normal(mu_nu, 1);
-  //nu ~ gamma(nu_pr_shape, mu_nu);
-
-  //assume equal variance help?
-  nu ~ gamma(nu_pr_shape, nu_pr_scale);
+  mu_nu ~ normal(0, 1);
+  nu ~ gamma(nu_pr_shape, mu_nu*nu_pr_scale);
 
   for(i in 1:numSpp){
     min_max[i][1] ~ normal(mu_min, 1);
@@ -102,7 +95,6 @@ model {
     stretch[sppint[n]],
     x_min[sppint[n]],
     x_max[sppint[n]]));
-    //target += normal_lpdf( y[n] | mu[n], (1+mu[n])*(1/nu[sppint[n]]));
     target += normal_lpdf( y[n] | mu[n], pow(1 + mu[n], 2)*(1/nu[sppint[n]]));
     }
 
