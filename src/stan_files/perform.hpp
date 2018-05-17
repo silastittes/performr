@@ -40,7 +40,7 @@ static int current_statement_begin__;
 stan::io::program_reader prog_reader__() {
     stan::io::program_reader reader;
     reader.add_event(0, 0, "start", "model_perform");
-    reader.add_event(104, 104, "end", "model_perform");
+    reader.add_event(105, 105, "end", "model_perform");
     return reader;
 }
 
@@ -692,8 +692,8 @@ public:
 
                 current_statement_begin__ = 95;
                 stan::math::assign(get_base1_lhs(mu,n,"mu",1), exp(perform_mu(get_base1(x,n,"x",1),get_base1(shape1,get_base1(sppint,n,"sppint",1),"shape1",1),get_base1(shape2,get_base1(sppint,n,"sppint",1),"shape2",1),get_base1(stretch,get_base1(sppint,n,"sppint",1),"stretch",1),get_base1(x_min,get_base1(sppint,n,"sppint",1),"x_min",1),get_base1(x_max,get_base1(sppint,n,"sppint",1),"x_max",1), pstream__)));
-                current_statement_begin__ = 101;
-                lp_accum__.add(normal_log(get_base1(y,n,"y",1),get_base1(mu,n,"mu",1),(pow((1 + get_base1(mu,n,"mu",1)),2) * (1 / get_base1(nu,get_base1(sppint,n,"sppint",1),"nu",1)))));
+                current_statement_begin__ = 102;
+                lp_accum__.add(normal_log(get_base1(y,n,"y",1),get_base1(mu,n,"mu",1),((1 + get_base1(mu,n,"mu",1)) * pow((1 / get_base1(nu,get_base1(sppint,n,"sppint",1),"nu",1)),2))));
             }
             }
 
