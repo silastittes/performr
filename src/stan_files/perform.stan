@@ -18,7 +18,7 @@ data {
 	int N;
 	int numSpp;
 	int <lower = 1> sppint[N];
-	real y[N];
+	real <lower = 0> y[N];
 	real x[N];
 	real shape1_pr_mu;
 	real shape1_pr_sig;
@@ -74,7 +74,7 @@ model {
   shape2 ~ normal(mu_shape2, 1);
 
   mu_stretch ~ normal(stretch_pr_mu, stretch_pr_sig);
-  stretch ~ normal(0, 1);
+  stretch ~ normal(mu_stretch, 1);
 
   mu_min ~ normal(min_pr_mu, min_pr_sig);
   //d ~ normal(0, );

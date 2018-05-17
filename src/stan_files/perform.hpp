@@ -276,6 +276,9 @@ public:
                 check_greater_or_equal(function__,"sppint[k0__]",sppint[k0__],1);
             }
             current_statement_begin__ = 21;
+            for (int k0__ = 0; k0__ < N; ++k0__) {
+                check_greater_or_equal(function__,"y[k0__]",y[k0__],0);
+            }
             current_statement_begin__ = 22;
             current_statement_begin__ = 23;
             current_statement_begin__ = 24;
@@ -681,7 +684,7 @@ public:
             current_statement_begin__ = 76;
             lp_accum__.add(normal_log<propto__>(mu_stretch, stretch_pr_mu, stretch_pr_sig));
             current_statement_begin__ = 77;
-            lp_accum__.add(normal_log<propto__>(stretch, 0, 1));
+            lp_accum__.add(normal_log<propto__>(stretch, mu_stretch, 1));
             current_statement_begin__ = 79;
             lp_accum__.add(normal_log<propto__>(mu_min, min_pr_mu, min_pr_sig));
             current_statement_begin__ = 82;
