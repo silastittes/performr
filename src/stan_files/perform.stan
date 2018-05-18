@@ -72,13 +72,12 @@ model {
  vector[N] mu;
 
   mu_shape1 ~ normal(shape1_pr_mu, shape1_pr_sig);
-  shape1 ~ normal(mu_shape1, 1);
 
   mu_shape2 ~ normal(shape2_pr_mu, shape2_pr_sig);
-  shape2 ~ normal(mu_shape2, 1);
+
 
   mu_stretch ~ normal(stretch_pr_mu, stretch_pr_sig);
-  stretch ~ normal(mu_stretch, 1);
+
 
   mu_min ~ normal(min_pr_mu, min_pr_sig);
   mu_max ~ normal(max_pr_mu, max_pr_sig);
@@ -88,6 +87,9 @@ model {
 
 
   for(i in 1:numSpp){
+    shape1[i] ~ normal(mu_shape1, 1) T[2, ];
+    shape2[i] ~ normal(mu_shape2, 1) T[2,];
+    stretch[i] ~ normal(mu_stretch, 1) T[0, ];
     min_max[i][1] ~ normal(mu_min, 1);
     min_max[i][2] ~ normal(mu_max, 1);
   }

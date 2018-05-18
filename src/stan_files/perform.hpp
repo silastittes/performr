@@ -40,7 +40,7 @@ static int current_statement_begin__;
 stan::io::program_reader prog_reader__() {
     stan::io::program_reader reader;
     reader.add_event(0, 0, "start", "model_perform");
-    reader.add_event(108, 108, "end", "model_perform");
+    reader.add_event(110, 110, "end", "model_perform");
     return reader;
 }
 
@@ -685,38 +685,44 @@ public:
 
             current_statement_begin__ = 74;
             lp_accum__.add(normal_log<propto__>(mu_shape1, shape1_pr_mu, shape1_pr_sig));
-            current_statement_begin__ = 75;
-            lp_accum__.add(normal_log<propto__>(shape1, mu_shape1, 1));
-            current_statement_begin__ = 77;
+            current_statement_begin__ = 76;
             lp_accum__.add(normal_log<propto__>(mu_shape2, shape2_pr_mu, shape2_pr_sig));
-            current_statement_begin__ = 78;
-            lp_accum__.add(normal_log<propto__>(shape2, mu_shape2, 1));
-            current_statement_begin__ = 80;
+            current_statement_begin__ = 79;
             lp_accum__.add(normal_log<propto__>(mu_stretch, stretch_pr_mu, stretch_pr_sig));
-            current_statement_begin__ = 81;
-            lp_accum__.add(normal_log<propto__>(stretch, mu_stretch, 1));
-            current_statement_begin__ = 83;
+            current_statement_begin__ = 82;
             lp_accum__.add(normal_log<propto__>(mu_min, min_pr_mu, min_pr_sig));
-            current_statement_begin__ = 84;
+            current_statement_begin__ = 83;
             lp_accum__.add(normal_log<propto__>(mu_max, max_pr_mu, max_pr_sig));
-            current_statement_begin__ = 86;
+            current_statement_begin__ = 85;
             lp_accum__.add(normal_log<propto__>(mu_nu, nu_pr_scale, 1));
-            current_statement_begin__ = 87;
+            current_statement_begin__ = 86;
             lp_accum__.add(gamma_log<propto__>(nu, nu_pr_shape, mu_nu));
-            current_statement_begin__ = 90;
+            current_statement_begin__ = 89;
             for (int i = 1; i <= numSpp; ++i) {
 
+                current_statement_begin__ = 90;
+                lp_accum__.add(normal_log<propto__>(get_base1(shape1,i,"shape1",1), mu_shape1, 1));
+                if (get_base1(shape1,i,"shape1",1) < 2) lp_accum__.add(-std::numeric_limits<double>::infinity());
+                else lp_accum__.add(-normal_ccdf_log(2, mu_shape1, 1));
                 current_statement_begin__ = 91;
-                lp_accum__.add(normal_log<propto__>(get_base1(get_base1(min_max,i,"min_max",1),1,"min_max",2), mu_min, 1));
+                lp_accum__.add(normal_log<propto__>(get_base1(shape2,i,"shape2",1), mu_shape2, 1));
+                if (get_base1(shape2,i,"shape2",1) < 2) lp_accum__.add(-std::numeric_limits<double>::infinity());
+                else lp_accum__.add(-normal_ccdf_log(2, mu_shape2, 1));
                 current_statement_begin__ = 92;
+                lp_accum__.add(normal_log<propto__>(get_base1(stretch,i,"stretch",1), mu_stretch, 1));
+                if (get_base1(stretch,i,"stretch",1) < 0) lp_accum__.add(-std::numeric_limits<double>::infinity());
+                else lp_accum__.add(-normal_ccdf_log(0, mu_stretch, 1));
+                current_statement_begin__ = 93;
+                lp_accum__.add(normal_log<propto__>(get_base1(get_base1(min_max,i,"min_max",1),1,"min_max",2), mu_min, 1));
+                current_statement_begin__ = 94;
                 lp_accum__.add(normal_log<propto__>(get_base1(get_base1(min_max,i,"min_max",1),2,"min_max",2), mu_max, 1));
             }
-            current_statement_begin__ = 96;
+            current_statement_begin__ = 98;
             for (int n = 1; n <= N; ++n) {
 
-                current_statement_begin__ = 97;
+                current_statement_begin__ = 99;
                 stan::math::assign(get_base1_lhs(mu,n,"mu",1), exp(perform_mu(get_base1(x,n,"x",1),get_base1(shape1,get_base1(sppint,n,"sppint",1),"shape1",1),get_base1(shape2,get_base1(sppint,n,"sppint",1),"shape2",1),get_base1(stretch,get_base1(sppint,n,"sppint",1),"stretch",1),get_base1(x_min,get_base1(sppint,n,"sppint",1),"x_min",1),get_base1(x_max,get_base1(sppint,n,"sppint",1),"x_max",1), pstream__)));
-                current_statement_begin__ = 104;
+                current_statement_begin__ = 106;
                 lp_accum__.add(normal_log(get_base1(y,n,"y",1),get_base1(mu,n,"mu",1),((pow((1 + get_base1(mu,n,"mu",1)),2) * 1) / get_base1(nu,get_base1(sppint,n,"sppint",1),"nu",1))));
             }
             }
