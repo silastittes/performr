@@ -40,7 +40,7 @@ static int current_statement_begin__;
 stan::io::program_reader prog_reader__() {
     stan::io::program_reader reader;
     reader.add_event(0, 0, "start", "model_perform");
-    reader.add_event(106, 106, "end", "model_perform");
+    reader.add_event(109, 109, "end", "model_perform");
     return reader;
 }
 
@@ -643,9 +643,13 @@ public:
 
 
             current_statement_begin__ = 63;
-            stan::math::assign(x_min, get_base1(min_max,1,"min_max",1));
-            current_statement_begin__ = 64;
-            stan::math::assign(x_max, get_base1(min_max,2,"min_max",1));
+            for (int i = 1; i <= numSpp; ++i) {
+
+                current_statement_begin__ = 64;
+                stan::math::assign(get_base1_lhs(x_min,i,"x_min",1), get_base1(get_base1(min_max,i,"min_max",1),1,"min_max",2));
+                current_statement_begin__ = 65;
+                stan::math::assign(get_base1_lhs(x_max,i,"x_max",1), get_base1(get_base1(min_max,i,"min_max",1),2,"min_max",2));
+            }
 
             // validate transformed parameters
             for (int i0__ = 0; i0__ < numSpp; ++i0__) {
@@ -670,7 +674,7 @@ public:
 
             // model body
             {
-            current_statement_begin__ = 71;
+            current_statement_begin__ = 72;
             validate_non_negative_index("mu", "N", N);
             Eigen::Matrix<T__,Eigen::Dynamic,1>  mu(static_cast<Eigen::VectorXd::Index>(N));
             (void) mu;  // dummy to suppress unused var warning
@@ -679,36 +683,40 @@ public:
             stan::math::fill(mu,DUMMY_VAR__);
 
 
-            current_statement_begin__ = 73;
+            current_statement_begin__ = 74;
             lp_accum__.add(normal_log<propto__>(mu_shape1, shape1_pr_mu, shape1_pr_sig));
-            current_statement_begin__ = 75;
+            current_statement_begin__ = 76;
             lp_accum__.add(normal_log<propto__>(mu_shape2, shape2_pr_mu, shape2_pr_sig));
-            current_statement_begin__ = 78;
+            current_statement_begin__ = 79;
             lp_accum__.add(normal_log<propto__>(mu_stretch, stretch_pr_mu, stretch_pr_sig));
-            current_statement_begin__ = 81;
-            lp_accum__.add(normal_log<propto__>(mu_min, min_pr_mu, min_pr_sig));
             current_statement_begin__ = 82;
+            lp_accum__.add(normal_log<propto__>(mu_min, min_pr_mu, min_pr_sig));
+            current_statement_begin__ = 83;
             lp_accum__.add(normal_log<propto__>(mu_max, max_pr_mu, max_pr_sig));
-            current_statement_begin__ = 84;
-            lp_accum__.add(normal_log<propto__>(mu_nu, nu_pr_scale, 1));
             current_statement_begin__ = 85;
+            lp_accum__.add(normal_log<propto__>(mu_nu, nu_pr_scale, 1));
+            current_statement_begin__ = 86;
             lp_accum__.add(gamma_log<propto__>(nu, nu_pr_shape, mu_nu));
-            current_statement_begin__ = 87;
-            lp_accum__.add(normal_log<propto__>(shape1, mu_shape1, 1));
             current_statement_begin__ = 88;
-            lp_accum__.add(normal_log<propto__>(shape2, mu_shape2, 1));
+            lp_accum__.add(normal_log<propto__>(shape1, mu_shape1, 1));
             current_statement_begin__ = 89;
-            lp_accum__.add(normal_log<propto__>(stretch, mu_stretch, 1));
+            lp_accum__.add(normal_log<propto__>(shape2, mu_shape2, 1));
             current_statement_begin__ = 90;
-            lp_accum__.add(normal_log<propto__>(get_base1(min_max,1,"min_max",1), mu_min, 1));
-            current_statement_begin__ = 91;
-            lp_accum__.add(normal_log<propto__>(get_base1(min_max,2,"min_max",1), mu_max, 1));
-            current_statement_begin__ = 94;
+            lp_accum__.add(normal_log<propto__>(stretch, mu_stretch, 1));
+            current_statement_begin__ = 92;
+            for (int i = 1; i <= numSpp; ++i) {
+
+                current_statement_begin__ = 93;
+                lp_accum__.add(normal_log<propto__>(get_base1(get_base1(min_max,i,"min_max",1),1,"min_max",2), mu_min, 1));
+                current_statement_begin__ = 94;
+                lp_accum__.add(normal_log<propto__>(get_base1(get_base1(min_max,i,"min_max",1),2,"min_max",2), mu_max, 1));
+            }
+            current_statement_begin__ = 97;
             for (int n = 1; n <= N; ++n) {
 
-                current_statement_begin__ = 95;
+                current_statement_begin__ = 98;
                 stan::math::assign(get_base1_lhs(mu,n,"mu",1), exp(perform_mu(get_base1(x,n,"x",1),get_base1(shape1,get_base1(sppint,n,"sppint",1),"shape1",1),get_base1(shape2,get_base1(sppint,n,"sppint",1),"shape2",1),get_base1(stretch,get_base1(sppint,n,"sppint",1),"stretch",1),get_base1(x_min,get_base1(sppint,n,"sppint",1),"x_min",1),get_base1(x_max,get_base1(sppint,n,"sppint",1),"x_max",1), pstream__)));
-                current_statement_begin__ = 102;
+                current_statement_begin__ = 105;
                 lp_accum__.add(normal_log(get_base1(y,n,"y",1),get_base1(mu,n,"mu",1),((pow((1 + get_base1(mu,n,"mu",1)),2) * 1) / get_base1(nu,get_base1(sppint,n,"sppint",1),"nu",1))));
             }
             }
@@ -872,9 +880,13 @@ public:
 
 
             current_statement_begin__ = 63;
-            stan::math::assign(x_min, get_base1(min_max,1,"min_max",1));
-            current_statement_begin__ = 64;
-            stan::math::assign(x_max, get_base1(min_max,2,"min_max",1));
+            for (int i = 1; i <= numSpp; ++i) {
+
+                current_statement_begin__ = 64;
+                stan::math::assign(get_base1_lhs(x_min,i,"x_min",1), get_base1(get_base1(min_max,i,"min_max",1),1,"min_max",2));
+                current_statement_begin__ = 65;
+                stan::math::assign(get_base1_lhs(x_max,i,"x_max",1), get_base1(get_base1(min_max,i,"min_max",1),2,"min_max",2));
+            }
 
             // validate transformed parameters
             current_statement_begin__ = 60;

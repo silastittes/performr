@@ -60,9 +60,10 @@ transformed parameters{
   vector[numSpp] x_min;
   vector[numSpp] x_max;
 
-  x_min = min_max[1];
-  x_max = min_max[2];
-
+  for(i in 1:numSpp){
+    x_min[i] = min_max[i][1];
+    x_max[i] = min_max[i][2];
+}
 }
 
 
@@ -87,9 +88,11 @@ model {
   shape1 ~ normal(mu_shape1, 1);
   shape2 ~ normal(mu_shape2, 1);
   stretch ~ normal(mu_stretch, 1);
-  min_max[1] ~ normal(mu_min, 1);
-  min_max[2] ~ normal(mu_max, 1);
 
+  for(i in 1:numSpp){
+    min_max[i][1] ~ normal(mu_min, 1);
+    min_max[i][2] ~ normal(mu_max, 1);
+  }
 
   for (n in 1:N) {
     mu[n] = exp(perform_mu(x[n],
