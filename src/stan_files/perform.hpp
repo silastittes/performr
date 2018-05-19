@@ -107,8 +107,8 @@ struct perform_mu_functor__ {
  class model_perform : public prob_grad {
 private:
     int N;
-    int numSpp;
-    vector<int> sppint;
+    int n_species;
+    vector<int> species_int;
     vector<double> y;
     vector<double> x;
     double shape1_pr_mu;
@@ -164,21 +164,21 @@ public:
             pos__ = 0;
             N = vals_i__[pos__++];
             current_statement_begin__ = 19;
-            context__.validate_dims("data initialization", "numSpp", "int", context__.to_vec());
-            numSpp = int(0);
-            vals_i__ = context__.vals_i("numSpp");
+            context__.validate_dims("data initialization", "n_species", "int", context__.to_vec());
+            n_species = int(0);
+            vals_i__ = context__.vals_i("n_species");
             pos__ = 0;
-            numSpp = vals_i__[pos__++];
+            n_species = vals_i__[pos__++];
             current_statement_begin__ = 20;
-            validate_non_negative_index("sppint", "N", N);
-            context__.validate_dims("data initialization", "sppint", "int", context__.to_vec(N));
-            validate_non_negative_index("sppint", "N", N);
-            sppint = std::vector<int>(N,int(0));
-            vals_i__ = context__.vals_i("sppint");
+            validate_non_negative_index("species_int", "N", N);
+            context__.validate_dims("data initialization", "species_int", "int", context__.to_vec(N));
+            validate_non_negative_index("species_int", "N", N);
+            species_int = std::vector<int>(N,int(0));
+            vals_i__ = context__.vals_i("species_int");
             pos__ = 0;
-            size_t sppint_limit_0__ = N;
-            for (size_t i_0__ = 0; i_0__ < sppint_limit_0__; ++i_0__) {
-                sppint[i_0__] = vals_i__[pos__++];
+            size_t species_int_limit_0__ = N;
+            for (size_t i_0__ = 0; i_0__ < species_int_limit_0__; ++i_0__) {
+                species_int[i_0__] = vals_i__[pos__++];
             }
             current_statement_begin__ = 21;
             validate_non_negative_index("y", "N", N);
@@ -280,7 +280,7 @@ public:
             current_statement_begin__ = 19;
             current_statement_begin__ = 20;
             for (int k0__ = 0; k0__ < N; ++k0__) {
-                check_greater_or_equal(function__,"sppint[k0__]",sppint[k0__],1);
+                check_greater_or_equal(function__,"species_int[k0__]",species_int[k0__],1);
             }
             current_statement_begin__ = 21;
             for (int k0__ = 0; k0__ < N; ++k0__) {
@@ -310,21 +310,21 @@ public:
             num_params_r__ = 0U;
             param_ranges_i__.clear();
             current_statement_begin__ = 41;
-            validate_non_negative_index("shape1", "numSpp", numSpp);
-            num_params_r__ += numSpp;
+            validate_non_negative_index("shape1", "n_species", n_species);
+            num_params_r__ += n_species;
             current_statement_begin__ = 42;
-            validate_non_negative_index("shape2", "numSpp", numSpp);
-            num_params_r__ += numSpp;
+            validate_non_negative_index("shape2", "n_species", n_species);
+            num_params_r__ += n_species;
             current_statement_begin__ = 43;
-            validate_non_negative_index("stretch", "numSpp", numSpp);
-            num_params_r__ += numSpp;
+            validate_non_negative_index("stretch", "n_species", n_species);
+            num_params_r__ += n_species;
             current_statement_begin__ = 44;
             validate_non_negative_index("min_max", "2", 2);
-            validate_non_negative_index("min_max", "numSpp", numSpp);
-            num_params_r__ += 2 * numSpp;
+            validate_non_negative_index("min_max", "n_species", n_species);
+            num_params_r__ += 2 * n_species;
             current_statement_begin__ = 45;
-            validate_non_negative_index("nu", "numSpp", numSpp);
-            num_params_r__ += numSpp;
+            validate_non_negative_index("nu", "n_species", n_species);
+            num_params_r__ += n_species;
             current_statement_begin__ = 47;
             ++num_params_r__;
             current_statement_begin__ = 48;
@@ -361,10 +361,10 @@ public:
             throw std::runtime_error("variable shape1 missing");
         vals_r__ = context__.vals_r("shape1");
         pos__ = 0U;
-        validate_non_negative_index("shape1", "numSpp", numSpp);
-        context__.validate_dims("initialization", "shape1", "vector_d", context__.to_vec(numSpp));
-        vector_d shape1(static_cast<Eigen::VectorXd::Index>(numSpp));
-        for (int j1__ = 0U; j1__ < numSpp; ++j1__)
+        validate_non_negative_index("shape1", "n_species", n_species);
+        context__.validate_dims("initialization", "shape1", "vector_d", context__.to_vec(n_species));
+        vector_d shape1(static_cast<Eigen::VectorXd::Index>(n_species));
+        for (int j1__ = 0U; j1__ < n_species; ++j1__)
             shape1(j1__) = vals_r__[pos__++];
         try {
             writer__.vector_lb_unconstrain(2,shape1);
@@ -376,10 +376,10 @@ public:
             throw std::runtime_error("variable shape2 missing");
         vals_r__ = context__.vals_r("shape2");
         pos__ = 0U;
-        validate_non_negative_index("shape2", "numSpp", numSpp);
-        context__.validate_dims("initialization", "shape2", "vector_d", context__.to_vec(numSpp));
-        vector_d shape2(static_cast<Eigen::VectorXd::Index>(numSpp));
-        for (int j1__ = 0U; j1__ < numSpp; ++j1__)
+        validate_non_negative_index("shape2", "n_species", n_species);
+        context__.validate_dims("initialization", "shape2", "vector_d", context__.to_vec(n_species));
+        vector_d shape2(static_cast<Eigen::VectorXd::Index>(n_species));
+        for (int j1__ = 0U; j1__ < n_species; ++j1__)
             shape2(j1__) = vals_r__[pos__++];
         try {
             writer__.vector_lb_unconstrain(2,shape2);
@@ -391,10 +391,10 @@ public:
             throw std::runtime_error("variable stretch missing");
         vals_r__ = context__.vals_r("stretch");
         pos__ = 0U;
-        validate_non_negative_index("stretch", "numSpp", numSpp);
-        context__.validate_dims("initialization", "stretch", "vector_d", context__.to_vec(numSpp));
-        vector_d stretch(static_cast<Eigen::VectorXd::Index>(numSpp));
-        for (int j1__ = 0U; j1__ < numSpp; ++j1__)
+        validate_non_negative_index("stretch", "n_species", n_species);
+        context__.validate_dims("initialization", "stretch", "vector_d", context__.to_vec(n_species));
+        vector_d stretch(static_cast<Eigen::VectorXd::Index>(n_species));
+        for (int j1__ = 0U; j1__ < n_species; ++j1__)
             stretch(j1__) = vals_r__[pos__++];
         try {
             writer__.vector_lb_unconstrain(0,stretch);
@@ -406,14 +406,14 @@ public:
             throw std::runtime_error("variable min_max missing");
         vals_r__ = context__.vals_r("min_max");
         pos__ = 0U;
-        validate_non_negative_index("min_max", "numSpp", numSpp);
+        validate_non_negative_index("min_max", "n_species", n_species);
         validate_non_negative_index("min_max", "2", 2);
-        context__.validate_dims("initialization", "min_max", "vector_d", context__.to_vec(numSpp,2));
-        std::vector<vector_d> min_max(numSpp,vector_d(static_cast<Eigen::VectorXd::Index>(2)));
+        context__.validate_dims("initialization", "min_max", "vector_d", context__.to_vec(n_species,2));
+        std::vector<vector_d> min_max(n_species,vector_d(static_cast<Eigen::VectorXd::Index>(2)));
         for (int j1__ = 0U; j1__ < 2; ++j1__)
-            for (int i0__ = 0U; i0__ < numSpp; ++i0__)
+            for (int i0__ = 0U; i0__ < n_species; ++i0__)
                 min_max[i0__](j1__) = vals_r__[pos__++];
-        for (int i0__ = 0U; i0__ < numSpp; ++i0__)
+        for (int i0__ = 0U; i0__ < n_species; ++i0__)
             try {
             writer__.ordered_unconstrain(min_max[i0__]);
         } catch (const std::exception& e) { 
@@ -424,10 +424,10 @@ public:
             throw std::runtime_error("variable nu missing");
         vals_r__ = context__.vals_r("nu");
         pos__ = 0U;
-        validate_non_negative_index("nu", "numSpp", numSpp);
-        context__.validate_dims("initialization", "nu", "vector_d", context__.to_vec(numSpp));
-        vector_d nu(static_cast<Eigen::VectorXd::Index>(numSpp));
-        for (int j1__ = 0U; j1__ < numSpp; ++j1__)
+        validate_non_negative_index("nu", "n_species", n_species);
+        context__.validate_dims("initialization", "nu", "vector_d", context__.to_vec(n_species));
+        vector_d nu(static_cast<Eigen::VectorXd::Index>(n_species));
+        for (int j1__ = 0U; j1__ < n_species; ++j1__)
             nu(j1__) = vals_r__[pos__++];
         try {
             writer__.vector_lb_unconstrain(0,nu);
@@ -547,26 +547,26 @@ public:
             Eigen::Matrix<T__,Eigen::Dynamic,1>  shape1;
             (void) shape1;  // dummy to suppress unused var warning
             if (jacobian__)
-                shape1 = in__.vector_lb_constrain(2,numSpp,lp__);
+                shape1 = in__.vector_lb_constrain(2,n_species,lp__);
             else
-                shape1 = in__.vector_lb_constrain(2,numSpp);
+                shape1 = in__.vector_lb_constrain(2,n_species);
 
             Eigen::Matrix<T__,Eigen::Dynamic,1>  shape2;
             (void) shape2;  // dummy to suppress unused var warning
             if (jacobian__)
-                shape2 = in__.vector_lb_constrain(2,numSpp,lp__);
+                shape2 = in__.vector_lb_constrain(2,n_species,lp__);
             else
-                shape2 = in__.vector_lb_constrain(2,numSpp);
+                shape2 = in__.vector_lb_constrain(2,n_species);
 
             Eigen::Matrix<T__,Eigen::Dynamic,1>  stretch;
             (void) stretch;  // dummy to suppress unused var warning
             if (jacobian__)
-                stretch = in__.vector_lb_constrain(0,numSpp,lp__);
+                stretch = in__.vector_lb_constrain(0,n_species,lp__);
             else
-                stretch = in__.vector_lb_constrain(0,numSpp);
+                stretch = in__.vector_lb_constrain(0,n_species);
 
             vector<Eigen::Matrix<T__,Eigen::Dynamic,1> > min_max;
-            size_t dim_min_max_0__ = numSpp;
+            size_t dim_min_max_0__ = n_species;
             min_max.reserve(dim_min_max_0__);
             for (size_t k_0__ = 0; k_0__ < dim_min_max_0__; ++k_0__) {
                 if (jacobian__)
@@ -578,9 +578,9 @@ public:
             Eigen::Matrix<T__,Eigen::Dynamic,1>  nu;
             (void) nu;  // dummy to suppress unused var warning
             if (jacobian__)
-                nu = in__.vector_lb_constrain(0,numSpp,lp__);
+                nu = in__.vector_lb_constrain(0,n_species,lp__);
             else
-                nu = in__.vector_lb_constrain(0,numSpp);
+                nu = in__.vector_lb_constrain(0,n_species);
 
             T__ mu_shape1;
             (void) mu_shape1;  // dummy to suppress unused var warning
@@ -627,15 +627,15 @@ public:
 
             // transformed parameters
             current_statement_begin__ = 60;
-            validate_non_negative_index("x_min", "numSpp", numSpp);
-            Eigen::Matrix<T__,Eigen::Dynamic,1>  x_min(static_cast<Eigen::VectorXd::Index>(numSpp));
+            validate_non_negative_index("x_min", "n_species", n_species);
+            Eigen::Matrix<T__,Eigen::Dynamic,1>  x_min(static_cast<Eigen::VectorXd::Index>(n_species));
             (void) x_min;  // dummy to suppress unused var warning
 
             stan::math::initialize(x_min, DUMMY_VAR__);
             stan::math::fill(x_min,DUMMY_VAR__);
             current_statement_begin__ = 61;
-            validate_non_negative_index("x_max", "numSpp", numSpp);
-            Eigen::Matrix<T__,Eigen::Dynamic,1>  x_max(static_cast<Eigen::VectorXd::Index>(numSpp));
+            validate_non_negative_index("x_max", "n_species", n_species);
+            Eigen::Matrix<T__,Eigen::Dynamic,1>  x_max(static_cast<Eigen::VectorXd::Index>(n_species));
             (void) x_max;  // dummy to suppress unused var warning
 
             stan::math::initialize(x_max, DUMMY_VAR__);
@@ -643,7 +643,7 @@ public:
 
 
             current_statement_begin__ = 63;
-            for (int i = 1; i <= numSpp; ++i) {
+            for (int i = 1; i <= n_species; ++i) {
 
                 current_statement_begin__ = 64;
                 stan::math::assign(get_base1_lhs(x_min,i,"x_min",1), get_base1(get_base1(min_max,i,"min_max",1),1,"min_max",2));
@@ -652,14 +652,14 @@ public:
             }
 
             // validate transformed parameters
-            for (int i0__ = 0; i0__ < numSpp; ++i0__) {
+            for (int i0__ = 0; i0__ < n_species; ++i0__) {
                 if (stan::math::is_uninitialized(x_min(i0__))) {
                     std::stringstream msg__;
                     msg__ << "Undefined transformed parameter: x_min" << '[' << i0__ << ']';
                     throw std::runtime_error(msg__.str());
                 }
             }
-            for (int i0__ = 0; i0__ < numSpp; ++i0__) {
+            for (int i0__ = 0; i0__ < n_species; ++i0__) {
                 if (stan::math::is_uninitialized(x_max(i0__))) {
                     std::stringstream msg__;
                     msg__ << "Undefined transformed parameter: x_max" << '[' << i0__ << ']';
@@ -704,7 +704,7 @@ public:
             current_statement_begin__ = 90;
             lp_accum__.add(normal_log<propto__>(stretch, mu_stretch, 1));
             current_statement_begin__ = 92;
-            for (int i = 1; i <= numSpp; ++i) {
+            for (int i = 1; i <= n_species; ++i) {
 
                 current_statement_begin__ = 93;
                 lp_accum__.add(normal_log<propto__>(get_base1(get_base1(min_max,i,"min_max",1),1,"min_max",2), mu_min, 1));
@@ -715,9 +715,9 @@ public:
             for (int n = 1; n <= N; ++n) {
 
                 current_statement_begin__ = 98;
-                stan::math::assign(get_base1_lhs(mu,n,"mu",1), exp(perform_mu(get_base1(x,n,"x",1),get_base1(shape1,get_base1(sppint,n,"sppint",1),"shape1",1),get_base1(shape2,get_base1(sppint,n,"sppint",1),"shape2",1),get_base1(stretch,get_base1(sppint,n,"sppint",1),"stretch",1),get_base1(x_min,get_base1(sppint,n,"sppint",1),"x_min",1),get_base1(x_max,get_base1(sppint,n,"sppint",1),"x_max",1), pstream__)));
+                stan::math::assign(get_base1_lhs(mu,n,"mu",1), exp(perform_mu(get_base1(x,n,"x",1),get_base1(shape1,get_base1(species_int,n,"species_int",1),"shape1",1),get_base1(shape2,get_base1(species_int,n,"species_int",1),"shape2",1),get_base1(stretch,get_base1(species_int,n,"species_int",1),"stretch",1),get_base1(x_min,get_base1(species_int,n,"species_int",1),"x_min",1),get_base1(x_max,get_base1(species_int,n,"species_int",1),"x_max",1), pstream__)));
                 current_statement_begin__ = 105;
-                lp_accum__.add(normal_log(get_base1(y,n,"y",1),get_base1(mu,n,"mu",1),((pow((1 + get_base1(mu,n,"mu",1)),2) * 1) / get_base1(nu,get_base1(sppint,n,"sppint",1),"nu",1))));
+                lp_accum__.add(normal_log(get_base1(y,n,"y",1),get_base1(mu,n,"mu",1),((pow((1 + get_base1(mu,n,"mu",1)),2) * 1) / get_base1(nu,get_base1(species_int,n,"species_int",1),"nu",1))));
             }
             }
 
@@ -766,20 +766,20 @@ public:
         dimss__.resize(0);
         std::vector<size_t> dims__;
         dims__.resize(0);
-        dims__.push_back(numSpp);
+        dims__.push_back(n_species);
         dimss__.push_back(dims__);
         dims__.resize(0);
-        dims__.push_back(numSpp);
+        dims__.push_back(n_species);
         dimss__.push_back(dims__);
         dims__.resize(0);
-        dims__.push_back(numSpp);
+        dims__.push_back(n_species);
         dimss__.push_back(dims__);
         dims__.resize(0);
-        dims__.push_back(numSpp);
+        dims__.push_back(n_species);
         dims__.push_back(2);
         dimss__.push_back(dims__);
         dims__.resize(0);
-        dims__.push_back(numSpp);
+        dims__.push_back(n_species);
         dimss__.push_back(dims__);
         dims__.resize(0);
         dimss__.push_back(dims__);
@@ -794,10 +794,10 @@ public:
         dims__.resize(0);
         dimss__.push_back(dims__);
         dims__.resize(0);
-        dims__.push_back(numSpp);
+        dims__.push_back(n_species);
         dimss__.push_back(dims__);
         dims__.resize(0);
-        dims__.push_back(numSpp);
+        dims__.push_back(n_species);
         dimss__.push_back(dims__);
     }
 
@@ -814,36 +814,36 @@ public:
         static const char* function__ = "model_perform_namespace::write_array";
         (void) function__;  // dummy to suppress unused var warning
         // read-transform, write parameters
-        vector_d shape1 = in__.vector_lb_constrain(2,numSpp);
-        vector_d shape2 = in__.vector_lb_constrain(2,numSpp);
-        vector_d stretch = in__.vector_lb_constrain(0,numSpp);
+        vector_d shape1 = in__.vector_lb_constrain(2,n_species);
+        vector_d shape2 = in__.vector_lb_constrain(2,n_species);
+        vector_d stretch = in__.vector_lb_constrain(0,n_species);
         vector<vector_d> min_max;
-        size_t dim_min_max_0__ = numSpp;
+        size_t dim_min_max_0__ = n_species;
         for (size_t k_0__ = 0; k_0__ < dim_min_max_0__; ++k_0__) {
             min_max.push_back(in__.ordered_constrain(2));
         }
-        vector_d nu = in__.vector_lb_constrain(0,numSpp);
+        vector_d nu = in__.vector_lb_constrain(0,n_species);
         double mu_shape1 = in__.scalar_constrain();
         double mu_shape2 = in__.scalar_constrain();
         double mu_stretch = in__.scalar_constrain();
         double mu_min = in__.scalar_constrain();
         double mu_max = in__.scalar_constrain();
         double mu_nu = in__.scalar_lb_constrain(0);
-            for (int k_0__ = 0; k_0__ < numSpp; ++k_0__) {
+            for (int k_0__ = 0; k_0__ < n_species; ++k_0__) {
             vars__.push_back(shape1[k_0__]);
             }
-            for (int k_0__ = 0; k_0__ < numSpp; ++k_0__) {
+            for (int k_0__ = 0; k_0__ < n_species; ++k_0__) {
             vars__.push_back(shape2[k_0__]);
             }
-            for (int k_0__ = 0; k_0__ < numSpp; ++k_0__) {
+            for (int k_0__ = 0; k_0__ < n_species; ++k_0__) {
             vars__.push_back(stretch[k_0__]);
             }
             for (int k_1__ = 0; k_1__ < 2; ++k_1__) {
-                for (int k_0__ = 0; k_0__ < numSpp; ++k_0__) {
+                for (int k_0__ = 0; k_0__ < n_species; ++k_0__) {
                 vars__.push_back(min_max[k_0__][k_1__]);
                 }
             }
-            for (int k_0__ = 0; k_0__ < numSpp; ++k_0__) {
+            for (int k_0__ = 0; k_0__ < n_species; ++k_0__) {
             vars__.push_back(nu[k_0__]);
             }
         vars__.push_back(mu_shape1);
@@ -864,15 +864,15 @@ public:
 
         try {
             current_statement_begin__ = 60;
-            validate_non_negative_index("x_min", "numSpp", numSpp);
-            vector_d x_min(static_cast<Eigen::VectorXd::Index>(numSpp));
+            validate_non_negative_index("x_min", "n_species", n_species);
+            vector_d x_min(static_cast<Eigen::VectorXd::Index>(n_species));
             (void) x_min;  // dummy to suppress unused var warning
 
             stan::math::initialize(x_min, std::numeric_limits<double>::quiet_NaN());
             stan::math::fill(x_min,DUMMY_VAR__);
             current_statement_begin__ = 61;
-            validate_non_negative_index("x_max", "numSpp", numSpp);
-            vector_d x_max(static_cast<Eigen::VectorXd::Index>(numSpp));
+            validate_non_negative_index("x_max", "n_species", n_species);
+            vector_d x_max(static_cast<Eigen::VectorXd::Index>(n_species));
             (void) x_max;  // dummy to suppress unused var warning
 
             stan::math::initialize(x_max, std::numeric_limits<double>::quiet_NaN());
@@ -880,7 +880,7 @@ public:
 
 
             current_statement_begin__ = 63;
-            for (int i = 1; i <= numSpp; ++i) {
+            for (int i = 1; i <= n_species; ++i) {
 
                 current_statement_begin__ = 64;
                 stan::math::assign(get_base1_lhs(x_min,i,"x_min",1), get_base1(get_base1(min_max,i,"min_max",1),1,"min_max",2));
@@ -893,10 +893,10 @@ public:
             current_statement_begin__ = 61;
 
             // write transformed parameters
-            for (int k_0__ = 0; k_0__ < numSpp; ++k_0__) {
+            for (int k_0__ = 0; k_0__ < n_species; ++k_0__) {
             vars__.push_back(x_min[k_0__]);
             }
-            for (int k_0__ = 0; k_0__ < numSpp; ++k_0__) {
+            for (int k_0__ = 0; k_0__ < n_species; ++k_0__) {
             vars__.push_back(x_max[k_0__]);
             }
 
@@ -942,29 +942,29 @@ public:
                                  bool include_tparams__ = true,
                                  bool include_gqs__ = true) const {
         std::stringstream param_name_stream__;
-        for (int k_0__ = 1; k_0__ <= numSpp; ++k_0__) {
+        for (int k_0__ = 1; k_0__ <= n_species; ++k_0__) {
             param_name_stream__.str(std::string());
             param_name_stream__ << "shape1" << '.' << k_0__;
             param_names__.push_back(param_name_stream__.str());
         }
-        for (int k_0__ = 1; k_0__ <= numSpp; ++k_0__) {
+        for (int k_0__ = 1; k_0__ <= n_species; ++k_0__) {
             param_name_stream__.str(std::string());
             param_name_stream__ << "shape2" << '.' << k_0__;
             param_names__.push_back(param_name_stream__.str());
         }
-        for (int k_0__ = 1; k_0__ <= numSpp; ++k_0__) {
+        for (int k_0__ = 1; k_0__ <= n_species; ++k_0__) {
             param_name_stream__.str(std::string());
             param_name_stream__ << "stretch" << '.' << k_0__;
             param_names__.push_back(param_name_stream__.str());
         }
         for (int k_1__ = 1; k_1__ <= 2; ++k_1__) {
-            for (int k_0__ = 1; k_0__ <= numSpp; ++k_0__) {
+            for (int k_0__ = 1; k_0__ <= n_species; ++k_0__) {
                 param_name_stream__.str(std::string());
                 param_name_stream__ << "min_max" << '.' << k_0__ << '.' << k_1__;
                 param_names__.push_back(param_name_stream__.str());
             }
         }
-        for (int k_0__ = 1; k_0__ <= numSpp; ++k_0__) {
+        for (int k_0__ = 1; k_0__ <= n_species; ++k_0__) {
             param_name_stream__.str(std::string());
             param_name_stream__ << "nu" << '.' << k_0__;
             param_names__.push_back(param_name_stream__.str());
@@ -989,12 +989,12 @@ public:
         param_names__.push_back(param_name_stream__.str());
 
         if (!include_gqs__ && !include_tparams__) return;
-        for (int k_0__ = 1; k_0__ <= numSpp; ++k_0__) {
+        for (int k_0__ = 1; k_0__ <= n_species; ++k_0__) {
             param_name_stream__.str(std::string());
             param_name_stream__ << "x_min" << '.' << k_0__;
             param_names__.push_back(param_name_stream__.str());
         }
-        for (int k_0__ = 1; k_0__ <= numSpp; ++k_0__) {
+        for (int k_0__ = 1; k_0__ <= n_species; ++k_0__) {
             param_name_stream__.str(std::string());
             param_name_stream__ << "x_max" << '.' << k_0__;
             param_names__.push_back(param_name_stream__.str());
@@ -1008,29 +1008,29 @@ public:
                                    bool include_tparams__ = true,
                                    bool include_gqs__ = true) const {
         std::stringstream param_name_stream__;
-        for (int k_0__ = 1; k_0__ <= numSpp; ++k_0__) {
+        for (int k_0__ = 1; k_0__ <= n_species; ++k_0__) {
             param_name_stream__.str(std::string());
             param_name_stream__ << "shape1" << '.' << k_0__;
             param_names__.push_back(param_name_stream__.str());
         }
-        for (int k_0__ = 1; k_0__ <= numSpp; ++k_0__) {
+        for (int k_0__ = 1; k_0__ <= n_species; ++k_0__) {
             param_name_stream__.str(std::string());
             param_name_stream__ << "shape2" << '.' << k_0__;
             param_names__.push_back(param_name_stream__.str());
         }
-        for (int k_0__ = 1; k_0__ <= numSpp; ++k_0__) {
+        for (int k_0__ = 1; k_0__ <= n_species; ++k_0__) {
             param_name_stream__.str(std::string());
             param_name_stream__ << "stretch" << '.' << k_0__;
             param_names__.push_back(param_name_stream__.str());
         }
         for (int k_1__ = 1; k_1__ <= 2; ++k_1__) {
-            for (int k_0__ = 1; k_0__ <= numSpp; ++k_0__) {
+            for (int k_0__ = 1; k_0__ <= n_species; ++k_0__) {
                 param_name_stream__.str(std::string());
                 param_name_stream__ << "min_max" << '.' << k_0__ << '.' << k_1__;
                 param_names__.push_back(param_name_stream__.str());
             }
         }
-        for (int k_0__ = 1; k_0__ <= numSpp; ++k_0__) {
+        for (int k_0__ = 1; k_0__ <= n_species; ++k_0__) {
             param_name_stream__.str(std::string());
             param_name_stream__ << "nu" << '.' << k_0__;
             param_names__.push_back(param_name_stream__.str());
@@ -1055,12 +1055,12 @@ public:
         param_names__.push_back(param_name_stream__.str());
 
         if (!include_gqs__ && !include_tparams__) return;
-        for (int k_0__ = 1; k_0__ <= numSpp; ++k_0__) {
+        for (int k_0__ = 1; k_0__ <= n_species; ++k_0__) {
             param_name_stream__.str(std::string());
             param_name_stream__ << "x_min" << '.' << k_0__;
             param_names__.push_back(param_name_stream__.str());
         }
-        for (int k_0__ = 1; k_0__ <= numSpp; ++k_0__) {
+        for (int k_0__ = 1; k_0__ <= n_species; ++k_0__) {
             param_name_stream__.str(std::string());
             param_name_stream__ << "x_max" << '.' << k_0__;
             param_names__.push_back(param_name_stream__.str());

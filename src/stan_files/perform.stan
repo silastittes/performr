@@ -16,8 +16,8 @@ functions{
 
 data {
 	int N;
-	int numSpp;
-	int <lower = 1> sppint[N];
+	int n_species;
+	int <lower = 1> species_int[N];
 	real <lower = 0> y[N];
 	real x[N];
 	real shape1_pr_mu;
@@ -38,11 +38,11 @@ data {
 parameters {
 
   //species level
-  vector<lower = 2>[numSpp] shape1;
-  vector<lower = 2>[numSpp] shape2;
-  vector<lower = 0>[numSpp] stretch;
-  ordered[2] min_max[numSpp];
-  vector<lower = 0>[numSpp] nu;
+  vector<lower = 2>[n_species] shape1;
+  vector<lower = 2>[n_species] shape2;
+  vector<lower = 0>[n_species] stretch;
+  ordered[2] min_max[n_species];
+  vector<lower = 0>[n_species] nu;
 
   real mu_shape1;
   real mu_shape2;
@@ -57,10 +57,10 @@ parameters {
 
 
 transformed parameters{
-  vector[numSpp] x_min;
-  vector[numSpp] x_max;
+  vector[n_species] x_min;
+  vector[n_species] x_max;
 
-  for(i in 1:numSpp){
+  for(i in 1:n_species){
     x_min[i] = min_max[i][1];
     x_max[i] = min_max[i][2];
 }
@@ -89,20 +89,20 @@ model {
   shape2 ~ normal(mu_shape2, 1);
   stretch ~ normal(mu_stretch, 1);
 
-  for(i in 1:numSpp){
+  for(i in 1:n_species){
     min_max[i][1] ~ normal(mu_min, 1);
     min_max[i][2] ~ normal(mu_max, 1);
   }
 
   for (n in 1:N) {
     mu[n] = exp(perform_mu(x[n],
-    shape1[sppint[n]],
-    shape2[sppint[n]],
-    stretch[sppint[n]],
-    x_min[sppint[n]],
-    x_max[sppint[n]]));
+    shape1[species_int[n]],
+    shape2[species_int[n]],
+    stretch[species_int[n]],
+    x_min[species_int[n]],
+    x_max[species_int[n]]));
 
-    target += normal_lpdf( y[n] | mu[n], pow(1 + mu[n],2)*1/nu[sppint[n]]);
+    target += normal_lpdf( y[n] | mu[n], pow(1 + mu[n],2)*1/nu[species_int[n]]);
 
     }
 

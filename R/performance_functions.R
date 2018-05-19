@@ -21,13 +21,13 @@ perform_df <- function(stan_out, species_order){
     new_post[[.x]] %>%
       data.frame() %>%
       set_colnames(species_order) %>%
-      gather("Species", x) %>%
-      set_colnames(c("Species", .x)) %>%
-      group_by(Species) %>%
+      gather("species", x) %>%
+      set_colnames(c("species", .x)) %>%
+      group_by(species) %>%
       mutate(draw = 1:n())
   }) %>%
     do.call(cbind, .) %>%
-    select(-starts_with("Species")) %>%
+    select(-starts_with("species")) %>%
     select(-matches("draw[0-9]")) %>%
     mutate(
       maxima = (((shape1 - 1)/(shape1*shape2 - 1))^(1/shape1) * (x_max - x_min) + x_min),
@@ -54,7 +54,7 @@ map_performance <- function(x = seq(0, 1, length.out = 100), par_df){
   #generate model fits where zeros affect parameters directly
   1:nrow(par_df) %>% map_df(~{
     draw_x <- par_df$draw[.x]
-    spp <- par_df$Species[.x]
+    species <- par_df$species[.x]
     x_min <- par_df$x_min[.x]
     x_max <- par_df$x_max[.x]
     shape1 <- par_df$shape1[.x]
@@ -62,7 +62,7 @@ map_performance <- function(x = seq(0, 1, length.out = 100), par_df){
     stretch <- par_df$stretch[.x]
     xs <- x*(x_max - x_min) + x_min
     mod_fit <- stretch*((shape1*shape2*x^(shape1-1)) * (1-x^shape1)^(shape2-1))
-    data_frame(Species = spp, x = xs, y = mod_fit, draw = draw_x)
+    data_frame(species = species, x = xs, y = mod_fit, draw = draw_x)
   })
 }
 
@@ -73,7 +73,7 @@ map_performance <- function(x = seq(0, 1, length.out = 100), par_df){
 #' Constructs a tidy data frame of generated data given a set of input parameters.
 #' @import tidyverse
 #' @param x A vector of values to evaluate performance over
-#' @param par_df A data frame like the one produced by perform_df(). MUST contain columns named: draw, Species, x_min, x_max, shape1, shape2, stretch, and nu.
+#' @param par_df A data frame like the one produced by perform_df(). MUST contain columns named: draw, species, x_min, x_max, shape1, shape2, stretch, and nu.
 #' @return A tidy data frame, containing a points along the environmental axis, and corresponding points for the performance axis, for each group and posterior draw input.
 #' @export
 posterior_predict <- function(x, par_df){
@@ -83,7 +83,7 @@ posterior_predict <- function(x, par_df){
 
   1:nrow(par_df) %>% map_df(~{
     draw_x <- par_df$draw[.x]
-    species_id <- par_df$Species[.x]
+    species <- par_df$species[.x]
     x_min <- par_df$x_min[.x]
     x_max <- par_df$x_max[.x]
     shape1 <- par_df$shape1[.x]
@@ -92,7 +92,7 @@ posterior_predict <- function(x, par_df){
     nu <- par_df$nu[.x]
     mu <- performance_mu(x, shape1, shape2, stretch, x_min, x_max)
     zero_idx <- x < x_min | x > x_max
-    mu_spp <- mu %>%
+    mu_species <- mu %>%
       map_dbl(function(x){
         rnorm(n = 1, mean = x, sd = (1+x)^2*1/nu) %>%
           (function(z) ifelse(z < 0, 0, z))
@@ -100,9 +100,9 @@ posterior_predict <- function(x, par_df){
       replace(zero_idx, 0)
 
     tibble(x = x,
-           trait = mu_spp,
+           trait = mu_species,
            mu = mu,
-           spp = rep(species_id, length(mu)),
+           species = rep(species, length(mu)),
            draw = rep(draw_x, length(mu))
     )
   })
