@@ -68,7 +68,7 @@ map_performance <- function(x = seq(0, 1, length.out = 100), par_df){
 
 
 
-#' Generate perforamcne curves data from parameters
+#' Generate psuedo-observed data from performance curve parameters
 #'
 #' Constructs a tidy data frame of generated data given a set of input parameters.
 #' @import tidyverse
@@ -76,6 +76,7 @@ map_performance <- function(x = seq(0, 1, length.out = 100), par_df){
 #' @param par_df A data frame like the one produced by perform_df(). MUST contain columns named: draw, species, x_min, x_max, shape1, shape2, stretch, and nu.
 #' @return A tidy data frame, containing a points along the environmental axis, and corresponding points for the performance axis, for each group and posterior draw input.
 #' @export
+#'
 posterior_predict <- function(x, par_df){
   if(missing(x)){
     x <- seq(x_min, x_max, length.out = 100)
@@ -107,4 +108,55 @@ posterior_predict <- function(x, par_df){
     )
   })
 }
+
+
+#' Generate psuedo-observed quantiles from performance curve parameters
+#'
+#' Constructs a tidy data frame of generated data given a set of input parameters.
+#' @import tidyverse
+#' @param x A vector of values to evaluate performance over
+#' @param par_df A data frame like the one produced by perform_df(). MUST contain columns named: draw, species, x_min, x_max, shape1, shape2, stretch, and nu.
+#' @param p Vector of probability values passed to qnorm -- the amount of probability density right of the returned quantiles
+#' @return A tidy data frame, containing upper and lower quantiles along the environmental axis, and corresponding points for the performance axis, for each group and posterior draw input.
+#' @export
+#'
+posterior_quantile <- function(x, p, par_df){
+  if(missing(x)){
+    x <- seq(x_min, x_max, length.out = 100)
+  }
+
+
+  low_q <- (1 - p)/2
+  hi_q <- 1 - low_q
+
+  1:nrow(par_df) %>% map_df(~{
+    draw_x <- par_df$draw[.x]
+    species <- par_df$species[.x]
+    x_min <- par_df$x_min[.x]
+    x_max <- par_df$x_max[.x]
+    shape1 <- par_df$shape1[.x]
+    shape2 <- par_df$shape2[.x]
+    stretch <- par_df$stretch[.x]
+    nu <- par_df$nu[.x]
+    mu <- performance_mu(x, shape1, shape2, stretch, x_min, x_max)
+    lower <- mu %>%
+      map_dbl(function(x){
+        qnorm(p = low_q, mean = x, sd = (1+x)^2*1/nu) %>%
+          (function(z) ifelse(z < 0, 0, z))
+      })
+    upper <- mu %>%
+      map_dbl(function(x){
+        qnorm(p = hi_q, mean = x, sd = (1+x)^2*1/nu) %>%
+          (function(z) ifelse(z < 0, 0, z))
+      })
+    tibble(x = x,
+           lower = lower,
+           upper = upper,
+           mu = mu,
+           species = rep(species, length(mu)),
+           draw = rep(draw_x, length(mu))
+    )
+  })
+}
+
 
