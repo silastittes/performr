@@ -79,7 +79,7 @@ map_performance <- function(x = seq(0, 1, length.out = 100), par_df){
 #'
 posterior_predict <- function(x, par_df){
   if(missing(x)){
-    x <- seq(x_min, x_max, length.out = 100)
+    x <- seq(min(par_df$x_min), max(par_df$x_max), length.out = 100)
   }
 
   1:nrow(par_df) %>% map_df(~{
@@ -122,7 +122,7 @@ posterior_predict <- function(x, par_df){
 #'
 posterior_quantile <- function(x, p, par_df){
   if(missing(x)){
-    x <- seq(x_min, x_max, length.out = 100)
+    x <- seq(min(par_df$x_min), max(par_df$x_max), length.out = 100)
   }
 
 
