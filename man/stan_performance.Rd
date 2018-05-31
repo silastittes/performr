@@ -7,8 +7,9 @@
 stan_performance(df, response, treatment, group_ids, file_id = NULL,
   max_treedepth = 10, iter = 2000, thin = 1, adapt_delta = 0.95,
   chains = 4, shape1_pr_mu = 4, shape1_pr_sig = 1, shape2_pr_mu = 4,
-  shape2_pr_sig = 1, stretch_pr_mu = 0, stretch_pr_sig = 1, min_pr_mu,
-  min_pr_sig = 1, max_pr_mu, max_pr_sig = 1, ...)
+  shape2_pr_sig = 1, stretch_pr_mu = 0, stretch_pr_sig = 1,
+  nu_pr_shape = 2, nu_pr_scale = 3, min_pr_mu, min_pr_sig = 1, max_pr_mu,
+  max_pr_sig = 1, ...)
 }
 \arguments{
 \item{df}{Data frame containing response, treatment, and groups of interest.}

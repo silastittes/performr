@@ -2,14 +2,14 @@
 % Please edit documentation in R/performance_functions.R
 \name{posterior_predict}
 \alias{posterior_predict}
-\title{Generate perforamcne curves data from parameters}
+\title{Generate psuedo-observed data from performance curve parameters}
 \usage{
 posterior_predict(x, par_df)
 }
 \arguments{
 \item{x}{A vector of values to evaluate performance over}
 
-\item{par_df}{A data frame like the one produced by perform_df(). MUST contain columns named: draw, Species, x_min, x_max, shape1, shape2, stretch, and nu.}
+\item{par_df}{A data frame like the one produced by perform_df(). MUST contain columns named: draw, species, x_min, x_max, shape1, shape2, stretch, and nu.}
 }
 \value{
 A tidy data frame, containing a points along the environmental axis, and corresponding points for the performance axis, for each group and posterior draw input.
