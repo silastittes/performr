@@ -125,6 +125,9 @@ posterior_quantile <- function(x, p, par_df){
     x <- seq(min(par_df$x_min), max(par_df$x_max), length.out = 100)
   }
 
+  if(min(p) < 0.5){
+    warning(str_glue("p < 0.5 are not sensible here, your lowest is {min(p)}."))
+  }
 
   low_q <- (1 - p)/2
   hi_q <- 1 - low_q
@@ -157,6 +160,38 @@ posterior_quantile <- function(x, p, par_df){
            draw = rep(draw_x, length(mu))
     )
   })
+}
+
+
+
+#' Prediction quantiles
+#'
+#' Generate performance prediction quantiles over multiple posterior draws. Good for visualzation.
+#' @import tidyverse
+#' @param spp The species to produce predictions over, one at a time is recommended.
+#' @param par_df A data frame like the one produced by perform_df(). MUST contain columns named: draw, species, x_min, x_max, shape1, shape2, stretch, and nu.
+#' c p Vector of probability values passed to qnorm -- the amount of probability density right of the returned quantiles
+#' @param ... option to pass the x argument to posterior_quantile() function.
+#' @return A tidy data frame, containing averaged upper and lower quantiles along the environmental axis, and corresponding points for the performance axis.
+#' @export
+#'
+
+predictions <- function(spp, par_df, x_draws, p, ...){
+
+  sub_df <- par_df %>%
+    filter(species == spp, draw %in% x_draws)
+
+  preds <- p %>%
+    map(~{
+      posterior_quantile(par_df = sub_df, p = .x, ...) %>%
+        group_by(species, x) %>%
+        summarise_all(.funs = mean) %>%
+        mutate(level = .x) %>%
+        arrange(x) %>%
+        select(-draw)
+    })
+  names(preds) <- paste0("l", round(p*100, 0))
+  preds
 }
 
 
