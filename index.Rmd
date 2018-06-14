@@ -1,0 +1,14 @@
+---
+title: "performr vignette"
+author: "Silas Tittes"
+date: "June 13, 2018"
+output: html_document
+---
+
+How to use `performr`
+===============
+
+```{r}
+plot(1,1)
+```
+
