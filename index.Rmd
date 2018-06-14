@@ -14,15 +14,26 @@ Installation
 ---------------
 
 Installing `performr` should be done using the following command:
-
 ```{r, eval=FALSE}
+#install
 devtools::install_github("silastittes/performr")
+
+#load library
+library(performr)
+```
+
+The `performr` depends on the `tidyverse`, which can take some time to install. Make sure your R is up to date! 
+
+Simulating example data 
+---------------
+
+```{r}
+simulate_data()
 ```
 
 
-Simulating example data
+Fitting the model with `performr::stan_performance()`
 ---------------
-
 
 Output
 ---------------
