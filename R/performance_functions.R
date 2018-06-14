@@ -199,3 +199,138 @@ predictions <- function(x, spp, par_df, x_draws, p){
 }
 
 
+
+#' Draw parameter values from priors for simulation
+#'
+#' Intended for internal use only.
+#' @import tidyverse
+#' @import truncnorm
+#' @export
+#'
+
+generate_parameters <- function(
+  n_spp,
+  mu_sig,
+  shape1_pr_mu,
+  shape2_pr_mu,
+  stretch_pr_mu,
+  min_pr_mu,
+  max_pr_mu,
+  nu_pr_shape,
+  nu_pr_scale,
+  pr_sig = 1
+){
+
+
+  mu_shape1 <- rnorm(1, shape1_pr_mu, mu_sig)
+  shape1 <- truncnorm::rtruncnorm(n_spp, a = 2, mean = mu_shape1, sd = pr_sig)
+
+  mu_shape2 <- rnorm(1, shape2_pr_mu, mu_sig)
+  shape2 <- truncnorm::rtruncnorm(n_spp, a = 2, mean = mu_shape2, sd = pr_sig)
+
+  mu_stretch <- rnorm(1, stretch_pr_mu, mu_sig)
+  stretch <- truncnorm::rtruncnorm(n_spp, a = 0, mean = mu_stretch, sd = pr_sig)
+
+  mu_min <- rnorm(1, min_pr_mu, mu_sig)
+  x_min <- rnorm(n_spp, mu_min, pr_sig)
+
+  mu_max <- rnorm(1, max_pr_mu, mu_sig)
+  x_max <- rnorm(n_spp, mu_max, pr_sig)
+
+  ed_test <- 1:n_spp %>% map_lgl(~x_min[.x] > x_max[.x]) %>% sum()
+  if(ed_test > 0){
+    stop("parameter d is greater than parameter e")
+  }
+
+  mu_nu <- truncnorm::rtruncnorm(1, a = 0, mean = nu_pr_scale, sd = 1)
+  nu <- rgamma(n_spp, shape = nu_pr_shape, scale = mu_nu)
+  #nu <- truncnorm::rtruncnorm(n_spp, a = 0, mean = mu_nu, sd = 1)
+
+
+  #assume same nu for each group
+  # nu <- rgamma(1, shape = 10, scale = 1) %>%
+  #   rep(n_spp)
+  #
+  list(shape1 = shape1, shape2 = shape2, stretch = stretch, x_min = x_min, x_max = x_max, nu = nu,
+       mu_shape1 = mu_shape1, mu_shape2 = mu_shape2, mu_stretch = mu_stretch,
+       mu_min = mu_min, mu_max = mu_max, mu_nu = mu_nu
+  )
+}
+
+
+#' Generates simulated data that can be used for practice and model validation
+#'
+#' Generates correctly formatted input data for the performance_stan() function.
+#' @import tidyverse
+#' @param n_spp The number of groups (i.e. species) to be simulated
+#' @param n_axis The number of sampling locations along environmental axis
+#' @param n_reps The number of times each location along the environmental axis should be sampled
+#' @param q_end Quantile [0,1] to determine how close to the ends of the axis sampling should start.
+#' @details All other arguments are hyper prior values used to generate species-level parameters. The arguments for the two shape parameters should remain above two, stretch above zero.
+#' @return A list containing the true parameters for each species (named true_params), and tidy data frame, containing columns for environmental axis, response trait, and groups (named sim_data).
+#' @export
+#' @examples
+#' simulate_data()
+
+simulate_data <- function(
+  n_spp = 2,
+  n_axis = 20,
+  n_reps = 2,
+  q_end = 0.9,
+  mu_sig = 1,
+  shape1_pr_mu = 2,
+  shape2_pr_mu = 2,
+  stretch_pr_mu = 2,
+  min_pr_mu = -5,
+  max_pr_mu = 5,
+  nu_pr_shape = 8,
+  nu_pr_scale = 3,
+  pr_sig = 1
+){
+  true_params <- generate_parameters(
+    n_spp = n_spp,
+    mu_sig = mu_sig,
+    shape1_pr_mu = shape1_pr_mu,
+    shape2_pr_mu = shape2_pr_mu,
+    stretch_pr_mu = stretch_pr_mu,
+    min_pr_mu = min_pr_mu,
+    max_pr_mu = max_pr_mu,
+    nu_pr_shape = nu_pr_shape,
+    nu_pr_scale = nu_pr_scale,
+    pr_sig = pr_sig
+  )
+
+  #where along axis to sample
+  q_end
+  x_lo <- quantile(true_params$x_min, q_end)
+  x_hi <- quantile(true_params$x_max, 1-q_end)
+
+  #in case max is less than min
+  if(x_lo > x_hi){
+    x_lo <- x_lo + x_hi
+    x_hi <- x_lo - x_hi
+    x_lo <- x_lo - x_hi
+  }
+
+  xseq <- seq(x_lo, x_hi, length.out = n_axis) %>%
+    rep(each = n_reps)
+
+  #generated data
+  sim_data <- 1:n_spp %>%
+    map_df(~{
+      true_df <- tibble(
+        shape1 = true_params$shape1[.x],
+        shape2 = true_params$shape2[.x],
+        stretch = true_params$stretch[.x],
+        x_min = true_params$x_min[.x],
+        x_max = true_params$x_max[.x],
+        nu = true_params$nu[.x],
+        species = .x,
+        draw = 1
+      )
+      posterior_predict(xseq, true_df)
+    })
+
+  list(true_params = true_params, sim_data = sim_data)
+}
+
