@@ -267,7 +267,7 @@ generate_parameters <- function(
 #' @param n_reps The number of times each location along the environmental axis should be sampled
 #' @param q_end Quantile [0,1] to determine how close to the ends of the axis sampling should start.
 #' @details All other arguments are hyper prior values used to generate species-level parameters. The arguments for the two shape parameters should remain above two, stretch above zero.
-#' @return A list containing the true parameters for each species (named true_params), and tidy data frame, containing columns for environmental axis, response trait, and groups (named sim_data).
+#' @return A list containing the true parameters for each species (named true_params), and tidy data frame, containing columns for environmental axis, response trait, mean response (handy for plotting the curve), and groups (named sim_data).
 #' @export
 #' @examples
 #' simulate_data()
@@ -325,8 +325,8 @@ simulate_data <- function(
         x_min = true_params$x_min[.x],
         x_max = true_params$x_max[.x],
         nu = true_params$nu[.x],
-        species = .x,
-        draw = 1
+        species = .x
+        #draw = 1
       )
       posterior_predict(xseq, true_df)
     })
