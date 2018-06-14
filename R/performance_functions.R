@@ -325,10 +325,11 @@ simulate_data <- function(
         x_min = true_params$x_min[.x],
         x_max = true_params$x_max[.x],
         nu = true_params$nu[.x],
-        species = .x
-        #draw = 1
+        species = .x,
+        draw = 1
       )
-      posterior_predict(xseq, true_df)
+      posterior_predict(xseq, true_df) %>%
+        select(-draw)
     })
 
   list(true_params = true_params, sim_data = sim_data)
