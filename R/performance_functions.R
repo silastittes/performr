@@ -51,7 +51,6 @@ perform_df <- function(stan_out, species_order){
 #' @export
 
 map_performance <- function(x = seq(0, 1, length.out = 100), par_df){
-  #generate model fits where zeros affect parameters directly
   1:nrow(par_df) %>% map_df(~{
     draw_x <- par_df$draw[.x]
     species <- par_df$species[.x]
@@ -62,6 +61,33 @@ map_performance <- function(x = seq(0, 1, length.out = 100), par_df){
     stretch <- par_df$stretch[.x]
     xs <- x*(x_max - x_min) + x_min
     mod_fit <- stretch*((shape1*shape2*x^(shape1-1)) * (1-x^shape1)^(shape2-1))
+    data_frame(species = species, x = xs, y = mod_fit, draw = draw_x)
+  })
+}
+
+
+
+
+
+#' Performance curve data frame
+#'
+#' Similar to map_performance(), but over a set of fixed points along the axis rather than being sampled relative to each species performance limits.
+#' @import tidyverse
+#' @param x A vector of values to evaluate performance over.
+#' @param par_df A data frame produced by perform_df().
+#' @return A tidy data frame, containing a points along the environmental axis, and corresponding points for the performance axis, for each group and posterior draw input.
+#' @export
+
+map_performance_fixed <- function(x, par_df){
+  1:nrow(par_df) %>% map_df(~{
+    draw_x <- par_df$draw[.x]
+    species <- par_df$species[.x]
+    x_min <- par_df$x_min[.x]
+    x_max <- par_df$x_max[.x]
+    shape1 <- par_df$shape1[.x]
+    shape2 <- par_df$shape2[.x]
+    stretch <- par_df$stretch[.x]
+    mod_fit <-performance_mu(x, shape1, shape2, stretch, x_min, x_max)
     data_frame(species = species, x = xs, y = mod_fit, draw = draw_x)
   })
 }

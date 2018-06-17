@@ -19,7 +19,7 @@ simulate_data(n_spp = 2, n_axis = 20, n_reps = 2, q_end = 0.9,
 \item{q_end}{Quantile [0,1] to determine how close to the ends of the axis sampling should start.}
 }
 \value{
-A list containing the true parameters for each species (named true_params), and tidy data frame, containing columns for environmental axis, response trait, and groups (named sim_data).
+A list containing the true parameters for each species (named true_params), and tidy data frame, containing columns for environmental axis, response trait, mean response (handy for plotting the curve), and groups (named sim_data).
 }
 \description{
 Generates correctly formatted input data for the performance_stan() function.

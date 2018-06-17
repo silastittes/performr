@@ -2,6 +2,7 @@
 
 export(generate_parameters)
 export(map_performance)
+export(map_performance_fixed)
 export(perform_df)
 export(performance_mu)
 export(posterior_predict)
