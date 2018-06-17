@@ -88,7 +88,7 @@ map_performance_fixed <- function(x, par_df){
     shape2 <- par_df$shape2[.x]
     stretch <- par_df$stretch[.x]
     mod_fit <-performance_mu(x, shape1, shape2, stretch, x_min, x_max)
-    data_frame(species = species, x = xs, y = mod_fit, draw = draw_x)
+    data_frame(species = species, x = x, y = mod_fit, draw = draw_x)
   })
 }
 
