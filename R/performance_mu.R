@@ -18,6 +18,9 @@ performance_mu <- function(xs, shape1, shape2, stretch, x_min, x_max){
   if(shape1 < 2 | shape2 < 2){
     stop("shape1 and shape2 must greater than 2")
   }
+  if(x_max <= x_min){
+    stop("x_max must be greater than x_min")
+  }
   x <- (xs - x_min)/(x_max - x_min)
   x %>% map_dbl(~ {
     if(.x > 0 & .x < 1){
