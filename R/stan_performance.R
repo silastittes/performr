@@ -1,7 +1,8 @@
 #' Performance curve inference with Stan
 #'
 #' Runs performance/tolerance curve model
-#' @import tidyverse
+#' @import magrittr
+#' @import dplyr
 #' @param df Data frame containing response, treatment, and groups of interest.
 #' @param response the unquoted column name containing the response trait (zero and positive real numbers expected).
 #' @param treatment the unquoted column name containing the treatment values (real values expected).
@@ -52,7 +53,6 @@ stan_performance <- function(df, response,
     max_pr_mu <- sel_pull(treatment) %>% max()
   }
 
-  #stan_out <- c(0,1) %>% map(~{ #don't need both versions at this point
   stan_in <- list(
     N = sel_pull(response) %>% length(),
     y = sel_pull(response),

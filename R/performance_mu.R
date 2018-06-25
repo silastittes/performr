@@ -1,7 +1,8 @@
 #' Performance curve
 #'
 #' Deterministic function representing an individual performance/tolerance curve.
-#' @import tidyverse
+#' @import purrr
+#' @import magrittr
 #' @param xs Vector of environmental axis values
 #' @param shape1 First parameter controlling asymmetry along environmental axis.
 #' @param shape2 Second parameter controlling asymmetry along environmental axis.

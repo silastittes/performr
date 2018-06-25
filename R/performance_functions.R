@@ -1,8 +1,23 @@
+#' Pipe
+#'
+#' Internal access of the pipe from magrittr
+#'
+#' @importFrom magrittr %>%
+#' @name %>%
+#' @rdname pipe
+#' @export
+#' @param lhs,rhs specify what lhs and rhs are
+NULL
+
+
+
 #' Performance data frame
 #'
 #' Constructs a tidy data frame from the output of stan_performance()
-#' @import tidyverse
+#' @import purrr
+#' @import tidyr
 #' @import magrittr
+#' @import dplyr
 #' @param stan_out The name of the object output of stan_performance().
 #' @param species_order A character vector of IDs that match the output dimensions of each parameter matrix.
 #' @return A tidy data frame, where each row is a draw from one of the input groups and each column is a model parameter. Additionally, several derived parameters, including the optimum, area, breadth, and area scaled by breadth (called special).
@@ -44,7 +59,9 @@ perform_df <- function(stan_out, species_order){
 #' Performance curve data frame
 #'
 #' Constructs a tidy data frame representing the full perforance curve (facilitates plotting).
-#' @import tidyverse
+#' @import purrr
+#' @import magrittr
+#' @import dplyr
 #' @param x A [0,1] vector of values to evaluate performance over
 #' @param par_df A data frame produced by perform_df().
 #' @return A tidy data frame, containing a points along the environmental axis, and corresponding points for the performance axis, for each group and posterior draw input.
@@ -72,7 +89,9 @@ map_performance <- function(x = seq(0, 1, length.out = 100), par_df){
 #' Performance curve data frame
 #'
 #' Similar to map_performance(), but over a set of fixed points along the axis rather than being sampled relative to each species performance limits.
-#' @import tidyverse
+#' @import purrr
+#' @import magrittr
+#' @import dplyr
 #' @param x A vector of values to evaluate performance over.
 #' @param par_df A data frame produced by perform_df().
 #' @return A tidy data frame, containing a points along the environmental axis, and corresponding points for the performance axis, for each group and posterior draw input.
@@ -97,7 +116,9 @@ map_performance_fixed <- function(x, par_df){
 #' Generate psuedo-observed data from performance curve parameters
 #'
 #' Constructs a tidy data frame of generated data given a set of input parameters.
-#' @import tidyverse
+#' @import purrr
+#' @import magrittr
+#' @import dplyr
 #' @param x A vector of values to evaluate performance over
 #' @param par_df A data frame like the one produced by perform_df(). MUST contain columns named: draw, species, x_min, x_max, shape1, shape2, stretch, and nu.
 #' @return A tidy data frame, containing a points along the environmental axis, and corresponding points for the performance axis, for each group and posterior draw input.
@@ -139,7 +160,10 @@ posterior_predict <- function(x, par_df){
 #' Generate psuedo-observed quantiles from performance curve parameters
 #'
 #' Constructs a tidy data frame of generated data given a set of input parameters.
-#' @import tidyverse
+#' @import purrr
+#' @import magrittr
+#' @import dplyr
+#' @import stringr
 #' @param x A vector of values to evaluate performance over
 #' @param par_df A data frame like the one produced by perform_df(). MUST contain columns named: draw, species, x_min, x_max, shape1, shape2, stretch, and nu.
 #' @param p Vector of probability values passed to qnorm -- the amount of probability density right of the returned quantiles
@@ -193,7 +217,9 @@ posterior_quantile <- function(x, p, par_df){
 #' Prediction quantiles
 #'
 #' Generate performance prediction quantiles over multiple posterior draws. Good for visualzation.
-#' @import tidyverse
+#' @import purrr
+#' @import magrittr
+#' @import dplyr
 #' @param spp The species to produce predictions over, one at a time is recommended.
 #' @param par_df A data frame like the one produced by perform_df(). MUST contain columns named: draw, species, x_min, x_max, shape1, shape2, stretch, and nu.
 #' c p Vector of probability values passed to qnorm -- the amount of probability density right of the returned quantiles
@@ -229,7 +255,10 @@ predictions <- function(x, spp, par_df, x_draws, p){
 #' Draw parameter values from priors for simulation
 #'
 #' Intended for internal use only.
-#' @import tidyverse
+#' @import purrr
+#' @import tidyr
+#' @import magrittr
+#' @import dplyr
 #' @import truncnorm
 #' @export
 #'
@@ -287,7 +316,9 @@ generate_parameters <- function(
 #' Generates simulated data that can be used for practice and model validation
 #'
 #' Generates correctly formatted input data for the performance_stan() function.
-#' @import tidyverse
+#' @import purrr
+#' @import magrittr
+#' @import dplyr
 #' @param n_spp The number of groups (i.e. species) to be simulated
 #' @param n_axis The number of sampling locations along environmental axis
 #' @param n_reps The number of times each location along the environmental axis should be sampled
