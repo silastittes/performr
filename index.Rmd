@@ -36,7 +36,7 @@ library(performr)
 ```
 
 
-The `performr` depends on several packages from the `tidyverse`. These can take some time to install, but usually goes smoothly as long as your R is up to date! If you run into troubles, check the R session info at the bottom of this page. Compare to your own session info for missing packages and package versions.  
+`performr` depends on several packages from the `tidyverse`. These can take some time to install, but usually goes smoothly as long as your R is up to date! If you run into troubles, check the R session info at the bottom of this page. Compare to your own session info for missing packages and older package versions.
 
 Simulating example data 
 ---------------
@@ -51,13 +51,13 @@ perf_df <- simulate_data(n_spp = 3, n_axis = 20, n_reps = 3)
 
 
 Here's quick look at the output:
-```{r}
+```{r, fig.cap="Simulated data for three 'species' plotted with the curves used to generate the samples."}
 str(perf_df)
 perf_df$sim_data %>%
-  ggplot(aes(x, trait, colour = factor(species))) +
+  mutate(species = factor(species)) %>%
+  ggplot(aes(x, trait, colour = species)) +
   geom_point() +
   geom_line(aes(x, mu))
-
 ```
 
 
@@ -68,30 +68,43 @@ Now that we have some example data, we can fit the model. Arguments with "pr" an
 
 
 ```{r, eval=FALSE}
-perf_out <- stan_performance(df = perf_df$sim_data, 
-                             response = trait, 
-                             treatment = x, 
-                             group_ids = species, 
-                             shape1_pr_mu = 2, shape1_pr_sig = 1, 
-                             shape2_pr_mu = 2, shape2_pr_sig = 1, 
-                             stretch_pr_mu = 1, stretch_pr_sig = 1, 
-                             nu_pr_shape = 8, nu_pr_scale = 3, 
-                             min_pr_mu = -5, min_pr_sig = 1, 
-                             max_pr_mu = 5, max_pr_sig = 1,
-                             iter =  200, 
-                             seed = 7345, 
-                             file_id = "stan_example"
-                             )
+perf_out <- 
+  stan_performance(
+    df = perf_df$sim_data, 
+    response = trait, 
+    treatment = x, 
+    group_ids = species, 
+    shape1_pr_mu = 2, 
+    shape1_pr_sig = 1, 
+    shape2_pr_mu = 2, 
+    shape2_pr_sig = 1, 
+    stretch_pr_mu = 1, 
+    stretch_pr_sig = 1, 
+    nu_pr_shape = 8, 
+    nu_pr_scale = 3, 
+    min_pr_mu = -5, 
+    min_pr_sig = 1, 
+    max_pr_mu = 5, 
+    max_pr_sig = 1,
+    iter =  200, 
+    seed = 7345, 
+    file_id = "stan_example"
+  )
 ```
 
 Although it won't appear on the webpage (the code above is not being evaluated) Stan warns us about the max tree depth (it may also warn about divergent transitions if the simulation is modified). Ideally, those messages should not appear. You can modify the arguments it recommends in  your call to `stan_performance()` as you would if calling Stan directly. Typically, a max_tree_depth between 12 to 14 works well (though slower). The adapt_delta defaults to 0.95, which is sufficient in my experience. Notice the file_id argument, which takes a file prefix if you want to save the model output to file (typically a good idea).
 
 We can read in the model from file as such:
 ```{r}
-perf_stan <- rstan::read_stan_csv(csvfiles = c("stan_example.samples_1.csv", 
-                                  "stan_example.samples_2.csv", 
-                                  "stan_example.samples_3.csv", 
-                                  "stan_example.samples_4.csv"))
+perf_stan <- 
+  rstan::read_stan_csv(
+    csvfiles = c(
+      "stan_example.samples_1.csv", 
+      "stan_example.samples_2.csv", 
+      "stan_example.samples_3.csv", 
+      "stan_example.samples_4.csv"
+    )
+  )
 ```
 
 
@@ -100,7 +113,7 @@ Output
 
 The output is the same as any Stan model. 
 ```{r}
-knitr::kable(rstan::summary(perf_stan)$summary)
+knitr::kable(rstan::summary(perf_stan)$summary, digits = 3)
 ```
 
 We can access the posterior draws using `rstan::extract()`, which produces a list containing draws for each parameter of the model.
@@ -130,10 +143,16 @@ Quickly, let's eyeball how these marginal posteriors for the x_max parameter (wh
 ```{r}
 max_df %>%
   group_by(species) %>%
-  summarise(cred_025 = quantile(value, 0.025),
-            cred_975 = quantile(value, 0.975)) %>%
-  mutate(truth = perf_df$true_params$x_max) %>%
-  mutate(within_cred = truth > cred_025 & truth < cred_975)
+  summarise(
+    cred_025 = quantile(value, 0.025),
+    cred_975 = quantile(value, 0.975)
+  ) %>%
+  mutate(
+    truth = perf_df$true_params$x_max
+  ) %>%
+  mutate(
+    within_cred = truth > cred_025 & truth < cred_975
+  )
 ```
 
 Cool, looks like the 95% credible interval captures the true value in each case. It would be easy to extend this approach using a function and quickly verify each parameter. 
@@ -146,7 +165,12 @@ The whole concept of posterior prediction and generating data from the model is 
 
 First, let's generate a tidy data frame with all the parameters, plus some valuable derived parameters, like the optimum, area, and breadth for each species:
 ```{r}
-head(tidy_perf <- perform_df(perf_stan, species_order = c(1, 2, 3)))
+tidy_perf <- 
+  perform_df(
+    perf_stan, 
+    species_order = c(1, 2, 3)
+  ) %>% 
+  head()
 ```
 
 Now we can generate pseudo observed data from the posterior draws. 
