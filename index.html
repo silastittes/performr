@@ -11,7 +11,7 @@
 
 <meta name="author" content="Silas Tittes" />
 
-<meta name="date" content="2018-06-14" />
+<meta name="date" content="2018-07-24" />
 
 <title>performr vignette</title>
 
@@ -121,7 +121,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">performr vignette</h1>
 <h4 class="author"><em>Silas Tittes</em></h4>
-<h4 class="date"><em>June 14, 2018</em></h4>
+<h4 class="date"><em>July 24, 2018</em></h4>
 
 </div>
 
@@ -129,6 +129,10 @@ $(document).ready(function () {
 <p>NOTE: This document is in progress. Feel free to suggest changes on the package’s <a href="https://github.com/silastittes/performr">GitHub page</a>, or by email <a href="mailto:silas.tittes@gmail.com">silas.tittes@gmail.com</a>.</p>
 <div id="how-to-use-performr-package" class="section level1">
 <h1>How to use <code>performr</code> package</h1>
+<pre><code>## Warning: replacing previous import 'magrittr::set_names' by
+## 'purrr::set_names' when loading 'performr'</code></pre>
+<pre><code>## Warning: replacing previous import 'magrittr::extract' by 'tidyr::extract'
+## when loading 'performr'</code></pre>
 <p><code>performr</code> implements a probabilistic Bayesian hierarchical model (using <a href="http://mc-stan.org/">Stan</a>) to predict performance curves for a set of input taxa. The manuscript that describes the method is in revision. This page is intended to help those interested in using the model for their own data.</p>
 <div id="installation" class="section level2">
 <h2>Installation</h2>
@@ -685,6 +689,88 @@ posterior_predict(par_df = .) %&gt;%
 ## 4 -5.17 0       0         1           1
 ## 5 -5.06 0       0         1           1
 ## 6 -4.94 0.00419 0.0000632 1           1</code></pre>
+<button data-toggle="collapse" data-target="#sessioninfo" class="btn btn-primary btn-md btn-info&gt;">
+R session info
+</button>
+<div id="sessioninfo" class="collapse">
+
+
+<pre class="r"><code>writeLines(readLines(file.path(Sys.getenv(&quot;HOME&quot;), &quot;.R/Makevars&quot;)))</code></pre>
+<pre><code>## 
+## CXXFLAGS=-O3 -mtune=native -march=native -Wno-unused-variable -Wno-unused-function  -Wno-macro-redefined</code></pre>
+<pre class="r"><code>devtools::session_info()</code></pre>
+<pre><code>## Session info -------------------------------------------------------------</code></pre>
+<pre><code>##  setting  value                       
+##  version  R version 3.4.4 (2018-03-15)
+##  system   x86_64, linux-gnu           
+##  ui       X11                         
+##  language en_US                       
+##  collate  en_US.UTF-8                 
+##  tz       America/Denver              
+##  date     2018-07-24</code></pre>
+<pre><code>## Packages -----------------------------------------------------------------</code></pre>
+<pre><code>##  package     * version    date       source                               
+##  assertthat    0.2.0      2017-04-11 CRAN (R 3.4.3)                       
+##  backports     1.1.2      2017-12-13 CRAN (R 3.4.3)                       
+##  base        * 3.4.4      2018-03-16 local                                
+##  bindr       * 0.1.1      2018-03-13 CRAN (R 3.4.4)                       
+##  bindrcpp    * 0.2.2      2018-03-29 cran (@0.2.2)                        
+##  cli           1.0.0      2017-11-05 CRAN (R 3.4.3)                       
+##  codetools     0.2-15     2016-10-05 CRAN (R 3.3.1)                       
+##  colorspace    1.3-2      2016-12-14 CRAN (R 3.4.3)                       
+##  compiler      3.4.4      2018-03-16 local                                
+##  crayon        1.3.4      2017-09-16 CRAN (R 3.4.3)                       
+##  datasets    * 3.4.4      2018-03-16 local                                
+##  devtools      1.13.5     2018-02-18 CRAN (R 3.4.4)                       
+##  digest        0.6.15     2018-01-28 CRAN (R 3.4.3)                       
+##  dplyr       * 0.7.5      2018-05-19 cran (@0.7.5)                        
+##  evaluate      0.10.1     2017-06-24 CRAN (R 3.4.3)                       
+##  ggplot2     * 2.2.1.9000 2018-02-25 Github (thomasp85/ggplot2@7859a29)   
+##  ggridges    * 0.4.1      2017-09-15 CRAN (R 3.4.3)                       
+##  glue          1.2.0      2017-10-29 CRAN (R 3.4.3)                       
+##  graphics    * 3.4.4      2018-03-16 local                                
+##  grDevices   * 3.4.4      2018-03-16 local                                
+##  grid          3.4.4      2018-03-16 local                                
+##  gridExtra     2.3        2017-09-09 CRAN (R 3.4.3)                       
+##  gtable        0.2.0      2016-02-26 CRAN (R 3.4.3)                       
+##  highr         0.6        2016-05-09 CRAN (R 3.4.3)                       
+##  htmltools     0.3.6      2017-04-28 CRAN (R 3.4.3)                       
+##  inline        0.3.14     2015-04-13 CRAN (R 3.4.3)                       
+##  knitr         1.20       2018-02-20 CRAN (R 3.4.3)                       
+##  labeling      0.3        2014-08-23 CRAN (R 3.4.3)                       
+##  lazyeval      0.2.1      2017-10-29 CRAN (R 3.4.3)                       
+##  magrittr    * 1.5        2014-11-22 CRAN (R 3.4.3)                       
+##  memoise       1.1.0      2017-04-21 CRAN (R 3.4.3)                       
+##  methods     * 3.4.4      2018-03-16 local                                
+##  munsell       0.4.3      2016-02-13 CRAN (R 3.4.3)                       
+##  performr    * 0.1        2018-06-25 Github (silastittes/performr@293207b)
+##  pillar        1.1.0      2018-01-14 CRAN (R 3.4.3)                       
+##  pkgconfig     2.0.1      2017-03-21 CRAN (R 3.4.3)                       
+##  plyr          1.8.4      2016-06-08 CRAN (R 3.4.3)                       
+##  purrr       * 0.2.5      2018-05-29 cran (@0.2.5)                        
+##  R6            2.2.2      2017-06-17 CRAN (R 3.4.3)                       
+##  Rcpp        * 0.12.17    2018-05-18 cran (@0.12.17)                      
+##  rlang         0.2.0.9001 2018-06-25 Github (tidyverse/rlang@ba4fb06)     
+##  rmarkdown     1.8        2017-11-17 CRAN (R 3.4.3)                       
+##  rprojroot     1.3-2      2018-01-03 CRAN (R 3.4.3)                       
+##  rstan         2.17.3     2018-01-20 CRAN (R 3.4.3)                       
+##  rstantools    1.5.0      2018-04-17 CRAN (R 3.4.4)                       
+##  scales        0.5.0.9000 2018-02-25 Github (hadley/scales@d767915)       
+##  StanHeaders   2.17.2     2018-01-20 CRAN (R 3.4.3)                       
+##  stats       * 3.4.4      2018-03-16 local                                
+##  stats4        3.4.4      2018-03-16 local                                
+##  stringi       1.2.3      2018-06-12 cran (@1.2.3)                        
+##  stringr     * 1.3.1      2018-05-10 cran (@1.3.1)                        
+##  tibble        1.4.2      2018-01-22 CRAN (R 3.4.3)                       
+##  tidyr       * 0.8.1      2018-05-18 cran (@0.8.1)                        
+##  tidyselect    0.2.4      2018-02-26 cran (@0.2.4)                        
+##  tools         3.4.4      2018-03-16 local                                
+##  truncnorm   * 1.0-8      2018-02-27 CRAN (R 3.4.4)                       
+##  utf8          1.1.3      2018-01-03 CRAN (R 3.4.3)                       
+##  utils       * 3.4.4      2018-03-16 local                                
+##  withr         2.1.2      2018-07-23 Github (jimhester/withr@fe56f20)     
+##  yaml          2.1.16     2017-12-12 CRAN (R 3.4.3)</code></pre>
+<p></dev></p>
 </div>
 </div>
 

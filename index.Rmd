@@ -157,3 +157,16 @@ posterior_predict(par_df = .) %>%
   head()
 ```
 
+
+
+<button data-toggle="collapse" data-target="#sessioninfo" class="btn btn-primary btn-md btn-info> R session info</button>
+
+<div id="sessioninfo" class="collapse">
+
+```{r}
+writeLines(readLines(file.path(Sys.getenv("HOME"), ".R/Makevars")))
+
+devtools::session_info()
+```
+
+</dev>
