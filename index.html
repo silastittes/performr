@@ -133,20 +133,20 @@ $(document).ready(function () {
 ## 'purrr::set_names' when loading 'performr'</code></pre>
 <pre><code>## Warning: replacing previous import 'magrittr::extract' by 'tidyr::extract'
 ## when loading 'performr'</code></pre>
-<p><code>performr</code> implements a probabilistic Bayesian hierarchical model (using <a href="http://mc-stan.org/">Stan</a>) to predict performance curves for a set of input taxa. The manuscript that describes the method is in revision. This page is intended to help those interested in using the model for their own data.</p>
+<p><code>performr</code> implements a probabilistic Bayesian hierarchical model (using <a href="http://mc-stan.org/">Stan</a>) to predict tolerance/performance curves for a set of input taxa. The manuscript that describes the method is in revision. This page is intended to help those interested in using the model for their own data.</p>
 <div id="installation" class="section level2">
 <h2>Installation</h2>
-<p>Installing <code>performr</code> should be done using the following command:</p>
+<p>Installing <code>performr</code> is done using the following command:</p>
 <pre class="r"><code>#install
 devtools::install_github(&quot;silastittes/performr&quot;)
 #load library
 library(performr)</code></pre>
-<p>The <code>performr</code> depends on the <code>tidyverse</code>, which can take some time to install. Make sure your R is up to date!</p>
+<p>The <code>performr</code> depends on several packages from the <code>tidyverse</code>. These can take some time to install, but usually goes smoothly as long as your R is up to date! If you run into troubles, check the R session info at the bottom of this page. Compare to your own session info for missing packages and package versions.</p>
 </div>
 <div id="simulating-example-data" class="section level2">
 <h2>Simulating example data</h2>
 <p>For demonstration and model validation, data can be simulated from the hyperpriors. The true parameter values for both hyper parameters and species-level parameters are returned in addition to a simulated data frame. All arguments have defaults, but fiddling with parameter values is encouraged.</p>
-<p>I’ll demonstrate a data set with three species, with 20 positions samples along an environmental axis, and three replicates and each position along the axis (wouldn’t that be something):</p>
+<p>I’ll demonstrate a data set with three species, 20 positions sampled along an environmental axis, and three replicates per species at each position along the axis (wouldn’t that be something):</p>
 <pre class="r"><code>set.seed(223524)
 perf_df &lt;- simulate_data(n_spp = 3, n_axis = 20, n_reps = 3)</code></pre>
 <p>Here’s quick look at the output:</p>
@@ -178,7 +178,7 @@ perf_df &lt;- simulate_data(n_spp = 3, n_axis = 20, n_reps = 3)</code></pre>
 </div>
 <div id="fitting-the-model-with-performrstan_performance" class="section level2">
 <h2>Fitting the model with <code>performr::stan_performance()</code></h2>
-<p>Now that we have some example data, we can fit the model. Arguments with “pr” and “sig” are the parameter priors, which I’ve set to match the defaults of the simulation (so this is best case scenario for the model getting it right). Notice, I’ve set a seed to make the results reproducible, and I’ve reduce the total number of iterations to 200. The default iterations of 2000 is preferred, but for speedy results.</p>
+<p>Now that we have some example data, we can fit the model. Arguments with “pr” and “sig” are the parameter priors, which I’ve set to match the defaults of the simulation (so this is best case scenario for the model getting it right). Notice, I’ve set a seed to make the results reproducible, and I’ve reduced the total number of iterations to 200. The default iterations of 2000 (or more) should be used for analysis, but 200 is good for demonstration and troubleshooting purposes.</p>
 <pre class="r"><code>perf_out &lt;- stan_performance(df = perf_df$sim_data, 
                              response = trait, 
                              treatment = x, 
@@ -661,7 +661,7 @@ max_df %&gt;%
 <div id="posterior-predictive-data-generation" class="section level2">
 <h2>Posterior predictive data generation</h2>
 <p>The whole concept of posterior prediction and generating data from the model is one of my favorite things about Bayesian statistics. It allows for a lot of creativity in how we check our assumptions. We can generate data from the model using this approach:</p>
-<p>First, let’s generate a tidy data frame with all the parameter, plus some valuable derived parameters, like the optimum, area, and breadth for each species:</p>
+<p>First, let’s generate a tidy data frame with all the parameters, plus some valuable derived parameters, like the optimum, area, and breadth for each species:</p>
 <pre class="r"><code>head(tidy_perf &lt;- perform_df(perf_stan, species_order = c(1, 2, 3)))</code></pre>
 <pre><code>## Adding missing grouping variables: `species`</code></pre>
 <pre><code>## # A tibble: 6 x 12
@@ -689,6 +689,8 @@ posterior_predict(par_df = .) %&gt;%
 ## 4 -5.17 0       0         1           1
 ## 5 -5.06 0       0         1           1
 ## 6 -4.94 0.00419 0.0000632 1           1</code></pre>
+<p>By default, the x-axis will be constructed as a sequence of 100 values that start from the minimum posterior draw value of x_min and end at the maximum of x_max. This default can be adjusted using the x argument.</p>
+<p>If you have questions, comments, or concerns, please get in touch. I would be excited to discuss!</p>
 <button data-toggle="collapse" data-target="#sessioninfo" class="btn btn-primary btn-md btn-info&gt;">
 R session info
 </button>

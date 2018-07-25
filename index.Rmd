@@ -22,12 +22,12 @@ knitr::opts_chunk$set(fig.align = "center")
 ```
 
 
-`performr` implements a probabilistic Bayesian hierarchical model (using [Stan](http://mc-stan.org/)) to predict performance curves for a set of input taxa. The manuscript that describes the method is in revision. This page is intended to help those interested in using the model for their own data.
+`performr` implements a probabilistic Bayesian hierarchical model (using [Stan](http://mc-stan.org/)) to predict tolerance/performance curves for a set of input taxa. The manuscript that describes the method is in revision. This page is intended to help those interested in using the model for their own data.
 
 Installation
 ---------------
 
-Installing `performr` should be done using the following command:
+Installing `performr` is done using the following command:
 ```{r, eval=FALSE}
 #install
 devtools::install_github("silastittes/performr")
@@ -36,14 +36,14 @@ library(performr)
 ```
 
 
-The `performr` depends on the `tidyverse`, which can take some time to install. Make sure your R is up to date! 
+The `performr` depends on several packages from the `tidyverse`. These can take some time to install, but usually goes smoothly as long as your R is up to date! If you run into troubles, check the R session info at the bottom of this page. Compare to your own session info for missing packages and package versions.  
 
 Simulating example data 
 ---------------
 
 For demonstration and model validation, data can be simulated from the hyperpriors. The true parameter values for both hyper parameters and species-level parameters are returned in addition to a simulated data frame. All arguments have defaults, but fiddling with parameter values is encouraged. 
 
-I'll demonstrate a data set with three species, with 20 positions samples along an environmental axis, and three replicates and each position along the axis (wouldn't that be something):
+I'll demonstrate a data set with three species, 20 positions sampled along an environmental axis, and three replicates per species at each position along the axis (wouldn't that be something):
 ```{r}
 set.seed(223524)
 perf_df <- simulate_data(n_spp = 3, n_axis = 20, n_reps = 3)
@@ -64,7 +64,7 @@ perf_df$sim_data %>%
 Fitting the model with `performr::stan_performance()`
 ---------------
 
-Now that we have some example data, we can fit the model. Arguments with "pr" and "sig" are the parameter priors, which I've set to match the defaults of the simulation (so this is best case scenario for the model getting it right). Notice, I've set a seed to make the results reproducible, and I've reduce the total number of iterations to 200. The default iterations of 2000 is preferred, but for speedy results.
+Now that we have some example data, we can fit the model. Arguments with "pr" and "sig" are the parameter priors, which I've set to match the defaults of the simulation (so this is best case scenario for the model getting it right). Notice, I've set a seed to make the results reproducible, and I've reduced the total number of iterations to 200. The default iterations of 2000 (or more) should be used for analysis, but 200 is good for demonstration and troubleshooting purposes.
 
 
 ```{r, eval=FALSE}
@@ -144,7 +144,7 @@ Posterior predictive data generation
 
 The whole concept of posterior prediction and generating data from the model is one of my favorite things about Bayesian statistics. It allows for a lot of creativity in how we check our assumptions. We can generate data from the model using this approach:
 
-First, let's generate a tidy data frame with all the parameter, plus some valuable derived parameters, like the optimum, area, and breadth for each species:
+First, let's generate a tidy data frame with all the parameters, plus some valuable derived parameters, like the optimum, area, and breadth for each species:
 ```{r}
 head(tidy_perf <- perform_df(perf_stan, species_order = c(1, 2, 3)))
 ```
@@ -156,7 +156,9 @@ tidy_perf %>%
 posterior_predict(par_df = .) %>%
   head()
 ```
+By default, the x-axis will be constructed as a sequence of 100 values that start from the minimum posterior draw value of x_min and end at the maximum of x_max. This default can be adjusted using the x argument.
 
+If you have questions, comments, or concerns, please get in touch. I would be excited to discuss! 
 
 
 <button data-toggle="collapse" data-target="#sessioninfo" class="btn btn-primary btn-md btn-info> R session info</button>
