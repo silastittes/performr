@@ -12,7 +12,7 @@ How to use `performr` package
 
 ```{r, echo=FALSE}
 #load library
-suppressMessages(library(performr))
+suppressWarnings(suppressMessages(library(performr)))
 suppressMessages(library(ggridges))
 theme_set(theme_minimal())
 
