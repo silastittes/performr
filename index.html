@@ -145,7 +145,17 @@ library(performr)</code></pre>
 <p>I’ll demonstrate a data set with three species, 20 positions sampled along an environmental axis, and three replicates per species at each position along the axis (wouldn’t that be something):</p>
 <pre class="r"><code>set.seed(223524)
 perf_df &lt;- simulate_data(n_spp = 3, n_axis = 20, n_reps = 3)</code></pre>
-<p>Here’s quick look at the output:</p>
+<p>Here are a few quick ways to look at the output:</p>
+<pre class="r"><code>head(perf_df$sim_data)</code></pre>
+<pre><code>## # A tibble: 6 x 4
+##       x  trait     mu species
+##   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;   &lt;int&gt;
+## 1 -4.72 0.0668 0.0389       1
+## 2 -4.72 0.0471 0.0389       1
+## 3 -4.72 0      0.0389       1
+## 4 -4.32 0.0560 0.0983       1
+## 5 -4.32 0.102  0.0983       1
+## 6 -4.32 0.0726 0.0983       1</code></pre>
 <pre class="r"><code>str(perf_df)</code></pre>
 <pre><code>## List of 2
 ##  $ true_params:List of 12
@@ -177,6 +187,7 @@ perf_df &lt;- simulate_data(n_spp = 3, n_axis = 20, n_reps = 3)</code></pre>
 Simulated data for three ‘species’ plotted with the curves used to generate the samples.
 </p>
 </div>
+<p>There are 3 columns of input data required to run the model, where each row represents an individual unit of sampling (name the columns and order them as you please): integers representing the group (referred to as “species” from here on) each sample belongs to (even if there is only one type), an x-axis (x) consisting of measurements from some environmental variable (soil moisture, temperature, etc.), a measure of performance for each individual studied in that environmental condition (trait). <em>Rows with missing values must be removed before fitting, and sampling among species need not be balanced</em>.</p>
 </div>
 <div id="fitting-the-model-with-performrstan_performance" class="section level2">
 <h2>Fitting the model with <code>performr::stan_performance()</code></h2>

@@ -50,9 +50,12 @@ perf_df <- simulate_data(n_spp = 3, n_axis = 20, n_reps = 3)
 ```
 
 
-Here's quick look at the output:
+Here are a few quick ways to look at the output:
 ```{r, fig.cap="Simulated data for three 'species' plotted with the curves used to generate the samples."}
+head(perf_df$sim_data)
+
 str(perf_df)
+
 perf_df$sim_data %>%
   mutate(species = factor(species)) %>%
   ggplot(aes(x, trait, colour = species)) +
@@ -60,6 +63,7 @@ perf_df$sim_data %>%
   geom_line(aes(x, mu))
 ```
 
+There are 3 columns of input data required to run the model, where each row represents an individual unit of sampling (name the columns and order them as you please): integers representing the group (referred to as "species" from here on) each sample belongs to (even if there is only one type), an x-axis (x) consisting of measurements from some environmental variable (soil moisture, temperature, etc.), a measure of performance for each individual studied in that environmental condition (trait). *Rows with missing values must be removed before fitting, and sampling among species need not be balanced*. 
 
 Fitting the model with `performr::stan_performance()`
 ---------------
