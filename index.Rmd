@@ -30,7 +30,7 @@ Installation
 Installing `performr` is done using the following command:
 ```{r, eval=FALSE}
 #install
-devtools::install_github("silastittes/performr")
+devtools::install_github("silastittes/performr", local = FALSE)
 #load library
 library(performr)
 ```
