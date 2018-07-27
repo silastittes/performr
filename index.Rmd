@@ -33,6 +33,7 @@ Installing `performr` is done using the following command:
 devtools::install_github("silastittes/performr", local = FALSE)
 #load library
 library(performr)
+library(tidyverse)
 ```
 
 
