@@ -173,7 +173,7 @@ max_df %>%
   )
 ```
 
-Cool, looks like the 95% credible interval captures the true value in each case. It would be easy to extend this approach using a function and quickly verify each parameter. 
+Cool, looks like the 95% credible interval captures the true value in each case. It would be easy to extend this approach using a function and quickly verify each parameter. Notice the increased uncertainty in posteriors further from the treatments on the x-axis ... Love that!
 
 
 Posterior predictive data generation
@@ -198,7 +198,7 @@ tidy_perf %>%
 posterior_predict(par_df = .) %>%
   head()
 ```
-By default, the x-axis will be constructed as a sequence of 100 values that start from the minimum posterior draw value of x_min and end at the maximum of x_max. This default can be adjusted using the x argument.
+By default, the x-axis will be constructed as a sequence of 100 values that start from the minimum posterior draw value of x_min and end at the maximum of x_max. This default can be changed using the x argument. Filtering for posterior draws is not required before using the function -- posterior predictive data will be produced for every posterior draw passed to `par_df`.
 
 If you have questions, comments, or concerns, please get in touch. I would be excited to discuss! 
 

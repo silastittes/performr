@@ -696,7 +696,7 @@ max_df %&gt;%
 ## 1 V1          3.91     6.30  4.41 T          
 ## 2 V2          2.37     2.70  2.52 T          
 ## 3 V3          3.85     6.00  4.38 T</code></pre>
-<p>Cool, looks like the 95% credible interval captures the true value in each case. It would be easy to extend this approach using a function and quickly verify each parameter.</p>
+<p>Cool, looks like the 95% credible interval captures the true value in each case. It would be easy to extend this approach using a function and quickly verify each parameter. Notice the increased uncertainty in posteriors further from the treatments on the x-axis … Love that!</p>
 </div>
 <div id="posterior-predictive-data-generation" class="section level2">
 <h2>Posterior predictive data generation</h2>
@@ -723,7 +723,7 @@ posterior_predict(par_df = .) %&gt;%
 ## 4 -4.66 0      0.00765  1           1
 ## 5 -4.55 0.0176 0.0153   1           1
 ## 6 -4.45 0.0306 0.0262   1           1</code></pre>
-<p>By default, the x-axis will be constructed as a sequence of 100 values that start from the minimum posterior draw value of x_min and end at the maximum of x_max. This default can be adjusted using the x argument.</p>
+<p>By default, the x-axis will be constructed as a sequence of 100 values that start from the minimum posterior draw value of x_min and end at the maximum of x_max. This default can be changed using the x argument. Filtering for posterior draws is not required before using the function – posterior predictive data will be produced for every posterior draw passed to <code>par_df</code>.</p>
 <p>If you have questions, comments, or concerns, please get in touch. I would be excited to discuss!</p>
 <button data-toggle="collapse" data-target="#sessioninfo" class="btn btn-primary btn-md btn-info&gt;">
 R session info
