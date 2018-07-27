@@ -137,7 +137,9 @@ $(document).ready(function () {
 devtools::install_github(&quot;silastittes/performr&quot;, local = FALSE)
 #load library
 library(performr)
-library(tidyverse)</code></pre>
+library(tidyverse)
+library(ggridges)
+theme_set(theme_minimal())</code></pre>
 <p><code>performr</code> depends on several packages from the <code>tidyverse</code>. These can take some time to install, but usually goes smoothly as long as your R is up to date! If you run into troubles, check the R session info at the bottom of this page. Compare to your own session info for missing packages and older package versions.</p>
 </div>
 <div id="simulating-example-data" class="section level2">
