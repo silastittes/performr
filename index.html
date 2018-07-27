@@ -11,7 +11,7 @@
 
 <meta name="author" content="Silas Tittes" />
 
-<meta name="date" content="2018-07-26" />
+<meta name="date" content="2018-07-27" />
 
 <title>performr vignette</title>
 
@@ -121,7 +121,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">performr vignette</h1>
 <h4 class="author"><em>Silas Tittes</em></h4>
-<h4 class="date"><em>July 26, 2018</em></h4>
+<h4 class="date"><em>July 27, 2018</em></h4>
 
 </div>
 
@@ -141,7 +141,11 @@ library(performr)
 library(tidyverse)
 library(ggridges)
 theme_set(theme_minimal())</code></pre>
-<p><code>performr</code> depends on several packages from the <code>tidyverse</code>. These can take some time to install, but usually goes smoothly as long as your R is up to date! If you run into troubles, check the R session info at the bottom of this page. Compare to your own session info for missing packages and older package versions.</p>
+<p>As the model is written in Stan, it requires a c++ compiler. For Apple and PC users, you may need to install one. If the installation command above fails, Mac users can open their terminal and type:</p>
+<pre class="bash"><code>xcode-select --install</code></pre>
+<p>This should open some dialogue to install the Xcode developer tools. Follow the prompts to install. Once the install finishes, try the above command again. At this point, I have not tested the package on PCs, but I would guess a similar step is required (please email me if you have success on a PC!).</p>
+<p>Linux users can likely run the command as-is, or by using <code>devtools::install_github(&quot;silastittes/performr&quot;)</code>, which would use the pre-compiled version that my Linux machine built (Linux Mint 18.3).</p>
+<p>Last installation detail, <code>performr</code> depends on several packages. These can take some time to install, but usually goes smoothly as long as your R is up to date! If you run into troubles, check the R session info at the bottom of this page. Compare to your own session info for missing packages and older package versions.</p>
 </div>
 <div id="simulating-example-data" class="section level2">
 <h2>Simulating example data</h2>
@@ -195,7 +199,7 @@ Simulated data for three ‘species’ plotted with the curves used to generate 
 </div>
 <div id="fitting-the-model-with-performrstan_performance" class="section level2">
 <h2>Fitting the model with <code>performr::stan_performance()</code></h2>
-<p>Now that we have some example data, we can fit the model. Arguments with “pr” and “sig” are the parameter priors, which I’ve set to match the defaults of the simulation (so this is best case scenario for the model getting it right). Notice, I’ve set a seed to make the results reproducible, and I’ve reduced the total number of iterations to 200. The default iterations of 2000 (or more) should be used for analysis, but 200 is good for demonstration and troubleshooting purposes.</p>
+<p>Now that we have some example data, we can fit the model. Arguments that include “<em>pr</em>” are parameters for the priors (for brevity, I will gloss over prior details here and refer readers to the paper once available), which I’ve set to match the defaults of the simulation (so this is best case scenario for the model getting it right). Notice, I’ve set a seed to make the results reproducible, and I’ve reduced the total number of iterations to 200. The default iterations of 2000 (or more) should be used for analysis, but 200 is good for demonstration and troubleshooting purposes.</p>
 <pre class="r"><code>perf_out &lt;- 
   stan_performance(
     df = perf_df$sim_data, 
@@ -739,7 +743,7 @@ R session info
 ##  language en_US                       
 ##  collate  en_US.UTF-8                 
 ##  tz       America/Denver              
-##  date     2018-07-26</code></pre>
+##  date     2018-07-27</code></pre>
 <pre><code>## Packages -----------------------------------------------------------------</code></pre>
 <pre><code>##  package     * version    date       source                               
 ##  assertthat    0.2.0      2017-04-11 CRAN (R 3.4.3)                       

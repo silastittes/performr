@@ -39,8 +39,18 @@ library(ggridges)
 theme_set(theme_minimal())
 ```
 
+As the model is written in Stan, it requires a c++ compiler. For Apple and PC users, you may need to install one. If the installation command above fails, Mac users can open their terminal and type:
 
-`performr` depends on several packages from the `tidyverse`. These can take some time to install, but usually goes smoothly as long as your R is up to date! If you run into troubles, check the R session info at the bottom of this page. Compare to your own session info for missing packages and older package versions.
+```{r, engine='bash', eval = F}
+xcode-select --install
+```
+
+This should open some dialogue to install the Xcode developer tools. Follow the prompts to install. Once the install finishes, try the above command again. At this point, I have not tested the package on PCs, but I would guess a similar step is required (please email me if you have success on a PC!).
+
+Linux users can likely run the command as-is, or by using `devtools::install_github("silastittes/performr")`, which would use the pre-compiled version that my Linux machine built (Linux Mint 18.3). 
+
+Last installation detail, `performr` depends on several packages. These can take some time to install, but usually goes smoothly as long as your R is up to date! If you run into troubles, check the R session info at the bottom of this page. Compare to your own session info for missing packages and older package versions.
+
 
 Simulating example data 
 ---------------
@@ -72,7 +82,7 @@ There are 3 columns of input data required to run the model, where each row repr
 Fitting the model with `performr::stan_performance()`
 ---------------
 
-Now that we have some example data, we can fit the model. Arguments with "pr" and "sig" are the parameter priors, which I've set to match the defaults of the simulation (so this is best case scenario for the model getting it right). Notice, I've set a seed to make the results reproducible, and I've reduced the total number of iterations to 200. The default iterations of 2000 (or more) should be used for analysis, but 200 is good for demonstration and troubleshooting purposes.
+Now that we have some example data, we can fit the model. Arguments that include "_pr_" are parameters for the priors (for brevity, I will gloss over prior details here and refer readers to the paper once available), which I've set to match the defaults of the simulation (so this is best case scenario for the model getting it right). Notice, I've set a seed to make the results reproducible, and I've reduced the total number of iterations to 200. The default iterations of 2000 (or more) should be used for analysis, but 200 is good for demonstration and troubleshooting purposes.
 
 
 ```{r, eval=FALSE}
