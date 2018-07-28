@@ -39,13 +39,13 @@ library(ggridges)
 theme_set(theme_minimal())
 ```
 
-As the model is written in Stan, it requires a c++ compiler. For Apple and PC users, you may need to install one. If the installation command above fails, Mac users can open their terminal and type:
+As the model is written in Stan, it requires a c++ compiler. For Apple and PC users, you likely need to install one. If the installation command above fails, Mac users can open their terminal and type:
 
 ```{r, engine='bash', eval = F}
 xcode-select --install
 ```
 
-This should open some dialogue to install the Xcode developer tools. Follow the prompts to install. Once the install finishes, try the above command again. At this point, I have not tested the package on PCs, but I would guess a similar step is required (please email me if you have success on a PC!).
+This should open some dialogue to install the Xcode developer tools. Follow the prompts to install. Once the install finishes, try the `install_github()` command again. At this point, I have not tested the package on PCs, but I would guess a similar step is required (please email me if you have success on a PC!).
 
 Linux users can likely run the command as-is, or by using `devtools::install_github("silastittes/performr")`, which would use the pre-compiled version that my Linux machine built (Linux Mint 18.3). 
 
@@ -77,7 +77,7 @@ perf_df$sim_data %>%
   geom_line(aes(x, mu))
 ```
 
-There are 3 columns of input data required to run the model, where each row represents an individual unit of sampling (name the columns and order them as you please): integers representing the group (referred to as "species" from here on) each sample belongs to (even if there is only one type), an x-axis (x) consisting of measurements from some environmental variable (soil moisture, temperature, etc.), a measure of performance for each individual studied in that environmental condition (trait). *Rows with missing values must be removed before fitting, and sampling among species need not be balanced*. 
+There are 3 columns of input data required to run the model, where each row represents an individual unit of sampling (name the columns and order them as you please): integers representing the group (referred to as "species" from here on) each sample belongs to (even if there is only one type), an x-axis (x) consisting of measurements from some environmental variable (soil moisture, temperature, etc.), a measure of performance for each individual studied in that environmental condition (trait). *Rows with missing values must be removed before fitting* -- `tidyr::drop_na()` is good for this.
 
 Fitting the model with `performr::stan_performance()`
 ---------------
@@ -110,7 +110,7 @@ perf_out <-
   )
 ```
 
-Although it won't appear on the webpage (the code above is not being evaluated) Stan warns us about the max tree depth (it may also warn about divergent transitions if the simulation is modified). Ideally, those messages should not appear. You can modify the arguments it recommends in  your call to `stan_performance()` as you would if calling Stan directly. Typically, a max_tree_depth between 12 to 14 works well (though slower). The adapt_delta defaults to 0.95, which is sufficient in my experience. Notice the file_id argument, which takes a file prefix if you want to save the model output to file (typically a good idea).
+Although it won't appear on the webpage (the code above is not being evaluated) Stan warns us about the max tree depth (it may also warn about divergent transitions if the simulation is modified). Ideally, those messages should not appear. You can modify the arguments it recommends in  your call to `stan_performance()` as you would if calling Stan directly. Typically, a max_tree_depth between 12 to 14 works well (though slower). The adapt_delta defaults to 0.95, which is sufficient in my experience. Notice the file_id argument, which takes a file prefix for saving the model output to file in your current directory.
 
 We can read in the model from file as such:
 ```{r}
@@ -183,19 +183,20 @@ The whole concept of posterior prediction and generating data from the model is 
 
 First, let's generate a tidy data frame with all the parameters, plus some valuable derived parameters, like the optimum, area, and breadth for each species:
 ```{r}
-tidy_perf <- 
-  perform_df(
-    perf_stan, 
-    species_order = c(1, 2, 3)
-  ) %>% 
-  head()
+head(
+  tidy_perf <- 
+    perform_df(
+      perf_stan, 
+      species_order = c(1, 2, 3)
+    ) 
+)
 ```
 
 Now we can generate pseudo observed data from the posterior draws. 
 ```{r}
 tidy_perf %>%
   filter(draw == 1) %>%
-posterior_predict(par_df = .) %>%
+  posterior_predict(par_df = .) %>%
   head()
 ```
 By default, the x-axis will be constructed as a sequence of 100 values that start from the minimum posterior draw value of x_min and end at the maximum of x_max. This default can be changed using the x argument. Filtering for posterior draws is not required before using the function -- posterior predictive data will be produced for every posterior draw passed to `par_df`.
