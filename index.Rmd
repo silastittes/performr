@@ -77,7 +77,13 @@ perf_df$sim_data %>%
   geom_line(aes(x, mu))
 ```
 
-There are 3 columns of input data required to run the model, where each row represents an individual unit of sampling (name the columns and order them as you please): integers representing the group (referred to as "species" from here on) each sample belongs to (even if there is only one type), an x-axis (x) consisting of measurements from some environmental variable (soil moisture, temperature, etc.), a measure of performance for each individual studied in that environmental condition (trait). *Rows with missing values must be removed before fitting* -- `tidyr::drop_na()` is good for this.
+There are 3 columns of input data required to run the model, where each row represents an individual unit of sampling (name and order the columns as you please): 
+
+- Integers representing the groups (or "species") each sample belongs to -- even if there is only one group.
+
+- An x-axis consisting of measurements from some environmental variable (soil moisture, temperature, etc.).
+
+- A measure of performance for each individual studied in that environmental condition (trait). *Rows with missing values must be removed before fitting* -- `tidyr::drop_na()` is good for this.
 
 Fitting the model with `performr::stan_performance()`
 ---------------

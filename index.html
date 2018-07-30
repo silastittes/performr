@@ -11,7 +11,7 @@
 
 <meta name="author" content="Silas Tittes" />
 
-<meta name="date" content="2018-07-28" />
+<meta name="date" content="2018-07-30" />
 
 <title>performr vignette</title>
 
@@ -121,7 +121,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">performr vignette</h1>
 <h4 class="author"><em>Silas Tittes</em></h4>
-<h4 class="date"><em>July 28, 2018</em></h4>
+<h4 class="date"><em>July 30, 2018</em></h4>
 
 </div>
 
@@ -195,7 +195,12 @@ perf_df &lt;- simulate_data(n_spp = 3, n_axis = 20, n_reps = 3)</code></pre>
 Simulated data for three ‘species’ plotted with the curves used to generate the samples.
 </p>
 </div>
-<p>There are 3 columns of input data required to run the model, where each row represents an individual unit of sampling (name the columns and order them as you please): integers representing the group (referred to as “species” from here on) each sample belongs to (even if there is only one type), an x-axis (x) consisting of measurements from some environmental variable (soil moisture, temperature, etc.), a measure of performance for each individual studied in that environmental condition (trait). <em>Rows with missing values must be removed before fitting</em> – <code>tidyr::drop_na()</code> is good for this.</p>
+<p>There are 3 columns of input data required to run the model, where each row represents an individual unit of sampling (name and order the columns as you please):</p>
+<ul>
+<li><p>Integers representing the groups (or “species”) each sample belongs to – even if there is only one group.</p></li>
+<li><p>An x-axis consisting of measurements from some environmental variable (soil moisture, temperature, etc.).</p></li>
+<li><p>A measure of performance for each individual studied in that environmental condition (trait). <em>Rows with missing values must be removed before fitting</em> – <code>tidyr::drop_na()</code> is good for this.</p></li>
+</ul>
 </div>
 <div id="fitting-the-model-with-performrstan_performance" class="section level2">
 <h2>Fitting the model with <code>performr::stan_performance()</code></h2>
@@ -755,7 +760,7 @@ R session info
 ##  language en_US                       
 ##  collate  en_US.UTF-8                 
 ##  tz       America/Denver              
-##  date     2018-07-28</code></pre>
+##  date     2018-07-30</code></pre>
 <pre><code>## Packages -----------------------------------------------------------------</code></pre>
 <pre><code>##  package     * version    date       source                               
 ##  assertthat    0.2.0      2017-04-11 CRAN (R 3.4.3)                       
