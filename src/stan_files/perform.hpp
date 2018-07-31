@@ -40,7 +40,7 @@ static int current_statement_begin__;
 stan::io::program_reader prog_reader__() {
     stan::io::program_reader reader;
     reader.add_event(0, 0, "start", "model_perform");
-    reader.add_event(109, 109, "end", "model_perform");
+    reader.add_event(128, 128, "end", "model_perform");
     return reader;
 }
 
@@ -759,6 +759,8 @@ public:
         names__.push_back("mu_nu");
         names__.push_back("x_min");
         names__.push_back("x_max");
+        names__.push_back("mu");
+        names__.push_back("log_lik");
     }
 
 
@@ -798,6 +800,12 @@ public:
         dimss__.push_back(dims__);
         dims__.resize(0);
         dims__.push_back(n_species);
+        dimss__.push_back(dims__);
+        dims__.resize(0);
+        dims__.push_back(N);
+        dimss__.push_back(dims__);
+        dims__.resize(0);
+        dims__.push_back(N);
         dimss__.push_back(dims__);
     }
 
@@ -902,12 +910,43 @@ public:
 
             if (!include_gqs__) return;
             // declare and define generated quantities
+            current_statement_begin__ = 116;
+            validate_non_negative_index("mu", "N", N);
+            vector_d mu(static_cast<Eigen::VectorXd::Index>(N));
+            (void) mu;  // dummy to suppress unused var warning
+
+            stan::math::initialize(mu, std::numeric_limits<double>::quiet_NaN());
+            stan::math::fill(mu,DUMMY_VAR__);
+            current_statement_begin__ = 117;
+            validate_non_negative_index("log_lik", "N", N);
+            vector_d log_lik(static_cast<Eigen::VectorXd::Index>(N));
+            (void) log_lik;  // dummy to suppress unused var warning
+
+            stan::math::initialize(log_lik, std::numeric_limits<double>::quiet_NaN());
+            stan::math::fill(log_lik,DUMMY_VAR__);
 
 
+            current_statement_begin__ = 118;
+            for (int n = 1; n <= N; ++n) {
+
+                current_statement_begin__ = 119;
+                stan::math::assign(get_base1_lhs(mu,n,"mu",1), exp(perform_mu(get_base1(x,n,"x",1),get_base1(shape1,get_base1(species_int,n,"species_int",1),"shape1",1),get_base1(shape2,get_base1(species_int,n,"species_int",1),"shape2",1),get_base1(stretch,get_base1(species_int,n,"species_int",1),"stretch",1),get_base1(x_min,get_base1(species_int,n,"species_int",1),"x_min",1),get_base1(x_max,get_base1(species_int,n,"species_int",1),"x_max",1), pstream__)));
+                current_statement_begin__ = 126;
+                stan::math::assign(get_base1_lhs(log_lik,n,"log_lik",1), normal_log(get_base1(y,n,"y",1),get_base1(mu,n,"mu",1),((pow((1 + get_base1(mu,n,"mu",1)),2) * 1) / get_base1(nu,get_base1(species_int,n,"species_int",1),"nu",1))));
+            }
 
             // validate generated quantities
+            current_statement_begin__ = 116;
+            current_statement_begin__ = 117;
 
             // write generated quantities
+            for (int k_0__ = 0; k_0__ < N; ++k_0__) {
+            vars__.push_back(mu[k_0__]);
+            }
+            for (int k_0__ = 0; k_0__ < N; ++k_0__) {
+            vars__.push_back(log_lik[k_0__]);
+            }
+
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(e, current_statement_begin__, prog_reader__());
             // Next line prevents compiler griping about no return
@@ -1001,6 +1040,16 @@ public:
         }
 
         if (!include_gqs__) return;
+        for (int k_0__ = 1; k_0__ <= N; ++k_0__) {
+            param_name_stream__.str(std::string());
+            param_name_stream__ << "mu" << '.' << k_0__;
+            param_names__.push_back(param_name_stream__.str());
+        }
+        for (int k_0__ = 1; k_0__ <= N; ++k_0__) {
+            param_name_stream__.str(std::string());
+            param_name_stream__ << "log_lik" << '.' << k_0__;
+            param_names__.push_back(param_name_stream__.str());
+        }
     }
 
 
@@ -1067,6 +1116,16 @@ public:
         }
 
         if (!include_gqs__) return;
+        for (int k_0__ = 1; k_0__ <= N; ++k_0__) {
+            param_name_stream__.str(std::string());
+            param_name_stream__ << "mu" << '.' << k_0__;
+            param_names__.push_back(param_name_stream__.str());
+        }
+        for (int k_0__ = 1; k_0__ <= N; ++k_0__) {
+            param_name_stream__.str(std::string());
+            param_name_stream__ << "log_lik" << '.' << k_0__;
+            param_names__.push_back(param_name_stream__.str());
+        }
     }
 
 }; // model

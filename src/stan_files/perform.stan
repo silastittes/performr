@@ -107,3 +107,22 @@ model {
     }
 
 }
+
+
+
+//compute log like for psis-loo
+generated quantities {
+
+  vector[N] mu;
+  vector[N] log_lik;
+  for (n in 1:N){
+    mu[n] = exp(perform_mu(x[n],
+    shape1[species_int[n]],
+    shape2[species_int[n]],
+    stretch[species_int[n]],
+    x_min[species_int[n]],
+    x_max[species_int[n]]));
+
+    log_lik[n] = normal_lpdf( y[n] | mu[n], pow(1 + mu[n],2)*1/nu[species_int[n]]);
+  }
+}
