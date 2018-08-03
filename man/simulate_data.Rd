@@ -7,7 +7,7 @@
 simulate_data(n_spp = 2, n_axis = 20, n_reps = 2, q_end = 0.9,
   mu_sig = 1, shape1_pr_mu = 2, shape2_pr_mu = 2, stretch_pr_mu = 2,
   min_pr_mu = -5, max_pr_mu = 5, nu_pr_shape = 8, nu_pr_scale = 3,
-  pr_sig = 1)
+  theta_pr = 1, pr_sig = 1)
 }
 \arguments{
 \item{n_spp}{The number of groups (i.e. species) to be simulated}

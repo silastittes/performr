@@ -5,7 +5,7 @@
 \title{Draw parameter values from priors for simulation}
 \usage{
 generate_parameters(n_spp, mu_sig, shape1_pr_mu, shape2_pr_mu, stretch_pr_mu,
-  min_pr_mu, max_pr_mu, nu_pr_shape, nu_pr_scale, pr_sig = 1)
+  min_pr_mu, max_pr_mu, nu_pr_shape, nu_pr_scale, theta_pr, pr_sig = 1)
 }
 \description{
 Intended for internal use only.

@@ -14,10 +14,10 @@ NULL
 #' Performance data frame
 #'
 #' Constructs a tidy data frame from the output of stan_performance()
-#' @import purrr
-#' @import tidyr
-#' @import magrittr
-#' @import dplyr
+#' @importFrom purrr map map_lgl map_dbl map_df
+#' @importFrom magrittr set_colnames
+#' @importFrom tidyr gather
+#' @importFrom dplyr group_by mutate select summarise summarise_all
 #' @param stan_out The name of the object output of stan_performance().
 #' @param species_order A character vector of IDs that match the output dimensions of each parameter matrix.
 #' @return A tidy data frame, where each row is a draw from one of the input groups and each column is a model parameter. Additionally, several derived parameters, including the optimum, area, breadth, and area scaled by breadth (called special).
@@ -30,14 +30,14 @@ perform_df <- function(stan_out, species_order){
 
   new_post <- stan_out %>% rstan::extract()
 
-  params <- c("x_min", "x_max", "shape1", "shape2", "stretch", "nu")
+  params <- c("x_min", "x_max", "shape1", "shape2", "stretch", "nu", "theta")
 
   par_df <- params %>% map( ~{
     new_post[[.x]] %>%
       data.frame() %>%
-      set_colnames(species_order) %>%
+      magrittr::set_colnames(species_order) %>%
       gather("species", x) %>%
-      set_colnames(c("species", .x)) %>%
+      magrittr::set_colnames(c("species", .x)) %>%
       group_by(species) %>%
       mutate(draw = 1:n())
   }) %>%
@@ -59,9 +59,10 @@ perform_df <- function(stan_out, species_order){
 #' Performance curve data frame
 #'
 #' Constructs a tidy data frame representing the full perforance curve (facilitates plotting).
-#' @import purrr
-#' @import magrittr
-#' @import dplyr
+#' @importFrom purrr map map_lgl map_dbl map_df
+#' @importFrom magrittr set_colnames
+#' @importFrom tidyr gather
+#' @importFrom dplyr group_by mutate select summarise summarise_all
 #' @param x A [0,1] vector of values to evaluate performance over
 #' @param par_df A data frame produced by perform_df().
 #' @return A tidy data frame, containing a points along the environmental axis, and corresponding points for the performance axis, for each group and posterior draw input.
@@ -89,9 +90,10 @@ map_performance <- function(x = seq(0, 1, length.out = 100), par_df){
 #' Performance curve data frame
 #'
 #' Similar to map_performance(), but over a set of fixed points along the axis rather than being sampled relative to each species performance limits.
-#' @import purrr
-#' @import magrittr
-#' @import dplyr
+#' @importFrom purrr map map_lgl map_dbl map_df
+#' @importFrom magrittr set_colnames
+#' @importFrom tidyr gather
+#' @importFrom dplyr group_by mutate select summarise summarise_all
 #' @param x A vector of values to evaluate performance over.
 #' @param par_df A data frame produced by perform_df().
 #' @return A tidy data frame, containing a points along the environmental axis, and corresponding points for the performance axis, for each group and posterior draw input.
@@ -116,15 +118,17 @@ map_performance_fixed <- function(x, par_df){
 #' Generate psuedo-observed data from performance curve parameters
 #'
 #' Constructs a tidy data frame of generated data given a set of input parameters.
-#' @import purrr
-#' @import magrittr
-#' @import dplyr
+#' @importFrom purrr map map_lgl map_dbl map_df
+#' @importFrom magrittr set_colnames
+#' @importFrom tidyr gather
+#' @importFrom dplyr group_by mutate select summarise summarise_all
 #' @param x A vector of values to evaluate performance over
 #' @param par_df A data frame like the one produced by perform_df(). MUST contain columns named: draw, species, x_min, x_max, shape1, shape2, stretch, and nu.
 #' @return A tidy data frame, containing a points along the environmental axis, and corresponding points for the performance axis, for each group and posterior draw input.
 #' @export
 #'
 posterior_predict <- function(x, par_df){
+
   if(missing(x)){
     x <- seq(min(par_df$x_min), max(par_df$x_max), length.out = 100)
   }
@@ -138,12 +142,14 @@ posterior_predict <- function(x, par_df){
     shape2 <- par_df$shape2[.x]
     stretch <- par_df$stretch[.x]
     nu <- par_df$nu[.x]
+    theta <- par_df$theta[.x]
     mu <- performance_mu(x, shape1, shape2, stretch, x_min, x_max)
     zero_idx <- x < x_min | x > x_max
     mu_species <- mu %>%
       map_dbl(function(x){
         rnorm(n = 1, mean = x, sd = (1+x)^2*1/nu) %>%
-          (function(z) ifelse(z < 0, 0, z))
+          (function(z) ifelse(z < 0, 0, z)) %>%
+          (function(r) ifelse(rbinom(1, 1, theta) == 0, 0, r)) #zero-inflated part
       }) %>%
       replace(zero_idx, 0)
 
@@ -160,10 +166,11 @@ posterior_predict <- function(x, par_df){
 #' Generate psuedo-observed quantiles from performance curve parameters
 #'
 #' Constructs a tidy data frame of generated data given a set of input parameters.
-#' @import purrr
-#' @import magrittr
-#' @import dplyr
-#' @import stringr
+#' @importFrom purrr map map_lgl map_dbl map_df
+#' @importFrom magrittr set_colnames
+#' @importFrom tidyr gather
+#' @importFrom dplyr group_by mutate select summarise summarise_all
+#' @importFrom stringr str_glue
 #' @param x A vector of values to evaluate performance over
 #' @param par_df A data frame like the one produced by perform_df(). MUST contain columns named: draw, species, x_min, x_max, shape1, shape2, stretch, and nu.
 #' @param p Vector of probability values passed to qnorm -- the amount of probability density right of the returned quantiles
@@ -190,17 +197,20 @@ posterior_quantile <- function(x, p, par_df){
     shape1 <- par_df$shape1[.x]
     shape2 <- par_df$shape2[.x]
     stretch <- par_df$stretch[.x]
+    theta <- par_df$theta[.x]
     nu <- par_df$nu[.x]
     mu <- performance_mu(x, shape1, shape2, stretch, x_min, x_max)
     lower <- mu %>%
       map_dbl(function(x){
         qnorm(p = low_q, mean = x, sd = (1+x)^2*1/nu) %>%
-          (function(z) ifelse(z < 0, 0, z))
+          (function(z) ifelse(z < 0, 0, z)) %>%
+          (function(r) ifelse(rbinom(1, 1, theta) == 0, 0, r)) #zero-inflated part
       })
     upper <- mu %>%
       map_dbl(function(x){
         qnorm(p = hi_q, mean = x, sd = (1+x)^2*1/nu) %>%
-          (function(z) ifelse(z < 0, 0, z))
+          (function(z) ifelse(z < 0, 0, z)) %>%
+          (function(r) ifelse(rbinom(1, 1, theta) == 0, 0, r)) #zero-inflated part
       })
     tibble(x = x,
            lower = lower,
@@ -217,9 +227,10 @@ posterior_quantile <- function(x, p, par_df){
 #' Prediction quantiles
 #'
 #' Generate performance prediction quantiles over multiple posterior draws. Good for visualzation.
-#' @import purrr
-#' @import magrittr
-#' @import dplyr
+#' @importFrom purrr map map_lgl map_dbl map_df
+#' @importFrom magrittr set_colnames
+#' @importFrom tidyr gather
+#' @importFrom dplyr group_by mutate select summarise summarise_all
 #' @param spp The species to produce predictions over, one at a time is recommended.
 #' @param par_df A data frame like the one produced by perform_df(). MUST contain columns named: draw, species, x_min, x_max, shape1, shape2, stretch, and nu.
 #' c p Vector of probability values passed to qnorm -- the amount of probability density right of the returned quantiles
@@ -255,13 +266,14 @@ predictions <- function(x, spp, par_df, x_draws, p){
 #' Draw parameter values from priors for simulation
 #'
 #' Intended for internal use only.
-#' @import purrr
-#' @import tidyr
-#' @import magrittr
-#' @import dplyr
-#' @import truncnorm
+#' @importFrom purrr map map_lgl map_dbl map_df
+#' @importFrom magrittr set_colnames
+#' @importFrom tidyr gather
+#' @importFrom dplyr group_by mutate select summarise summarise_all
+#' @importFrom truncnorm rtruncnorm
 #' @export
 #'
+
 
 generate_parameters <- function(
   n_spp,
@@ -273,6 +285,8 @@ generate_parameters <- function(
   max_pr_mu,
   nu_pr_shape,
   nu_pr_scale,
+  theta_pr1,
+  theta_pr2,
   pr_sig = 1
 ){
 
@@ -292,6 +306,10 @@ generate_parameters <- function(
   mu_max <- rnorm(1, max_pr_mu, mu_sig)
   x_max <- rnorm(n_spp, mu_max, pr_sig)
 
+  mu_theta1 <- truncnorm::rtruncnorm(1, a = 0, mean = theta_pr1, sd = pr_sig)
+  mu_theta2 <- truncnorm::rtruncnorm(1, a = 0, mean = theta_pr2, sd = pr_sig)
+  theta <- rbeta(n_spp, mu_theta1, mu_theta2)
+
   ed_test <- 1:n_spp %>% map_lgl(~x_min[.x] > x_max[.x]) %>% sum()
   if(ed_test > 0){
     stop("parameter d is greater than parameter e")
@@ -306,9 +324,9 @@ generate_parameters <- function(
   # nu <- rgamma(1, shape = 10, scale = 1) %>%
   #   rep(n_spp)
   #
-  list(shape1 = shape1, shape2 = shape2, stretch = stretch, x_min = x_min, x_max = x_max, nu = nu,
-       mu_shape1 = mu_shape1, mu_shape2 = mu_shape2, mu_stretch = mu_stretch,
-       mu_min = mu_min, mu_max = mu_max, mu_nu = mu_nu
+  list(shape1 = shape1, shape2 = shape2, stretch = stretch, x_min = x_min, x_max = x_max,
+       nu = nu, theta = theta, mu_shape1 = mu_shape1, mu_shape2 = mu_shape2,
+       mu_stretch = mu_stretch, mu_min = mu_min, mu_max = mu_max, mu_nu = mu_nu, mu_theta1, mu_theta2
   )
 }
 
@@ -316,9 +334,10 @@ generate_parameters <- function(
 #' Generates simulated data that can be used for practice and model validation
 #'
 #' Generates correctly formatted input data for the performance_stan() function.
-#' @import purrr
-#' @import magrittr
-#' @import dplyr
+#' @importFrom purrr map map_lgl map_dbl map_df
+#' @importFrom magrittr set_colnames
+#' @importFrom tidyr gather
+#' @importFrom dplyr group_by mutate select summarise summarise_all
 #' @param n_spp The number of groups (i.e. species) to be simulated
 #' @param n_axis The number of sampling locations along environmental axis
 #' @param n_reps The number of times each location along the environmental axis should be sampled
@@ -340,8 +359,10 @@ simulate_data <- function(
   stretch_pr_mu = 2,
   min_pr_mu = -5,
   max_pr_mu = 5,
-  nu_pr_shape = 8,
-  nu_pr_scale = 3,
+  nu_pr_shape = 4,
+  nu_pr_scale = 2,
+  theta_pr1 = 1,
+  theta_pr2 = 1,
   pr_sig = 1
 ){
   true_params <- generate_parameters(
@@ -354,6 +375,8 @@ simulate_data <- function(
     max_pr_mu = max_pr_mu,
     nu_pr_shape = nu_pr_shape,
     nu_pr_scale = nu_pr_scale,
+    theta_pr1 = theta_pr1,
+    theta_pr2 = theta_pr2,
     pr_sig = pr_sig
   )
 
@@ -382,6 +405,7 @@ simulate_data <- function(
         x_min = true_params$x_min[.x],
         x_max = true_params$x_max[.x],
         nu = true_params$nu[.x],
+        theta = true_params$theta[.x],
         species = .x,
         draw = 1
       )

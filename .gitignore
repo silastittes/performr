@@ -1,2 +1,6 @@
 .Rproj.user
 .Rhistory
+stan_example.samples_1.csv
+stan_example.samples_2.csv
+stan_example.samples_3.csv
+stan_example.samples_4.csv

@@ -30,6 +30,8 @@ data {
 	real min_pr_sig;
 	real max_pr_mu;
 	real max_pr_sig;
+	real pr_theta1;
+	real pr_theta2;
 	real <lower = 0> nu_pr_shape;
 	real <lower = 0> nu_pr_scale;
 }
@@ -52,6 +54,9 @@ parameters {
   real mu_max;
   real <lower=0> mu_nu;
 
+  real <lower = 0, upper = 1> theta[n_species];
+  real <lower = 0> mu_theta1;
+  real <lower = 0> mu_theta2;
 }
 
 
@@ -72,28 +77,23 @@ model {
  vector[N] mu;
 
   mu_shape1 ~ normal(shape1_pr_mu, shape1_pr_sig);
-
   mu_shape2 ~ normal(shape2_pr_mu, shape2_pr_sig);
-
-
   mu_stretch ~ normal(stretch_pr_mu, stretch_pr_sig);
-
-
   mu_min ~ normal(min_pr_mu, min_pr_sig);
   mu_max ~ normal(max_pr_mu, max_pr_sig);
-
   mu_nu ~ normal(nu_pr_scale, 1);
   nu ~ gamma(nu_pr_shape, mu_nu);
-
   shape1 ~ normal(mu_shape1, 1);
   shape2 ~ normal(mu_shape2, 1);
   stretch ~ normal(mu_stretch, 1);
+  mu_theta1 ~ normal(pr_theta1, 1);
+  mu_theta2 ~ normal(pr_theta2, 1);
+  theta ~ beta(mu_theta1, mu_theta2);
 
   for(i in 1:n_species){
     min_max[i][1] ~ normal(mu_min, 1);
     min_max[i][2] ~ normal(mu_max, 1);
   }
-
   for (n in 1:N) {
     mu[n] = exp(perform_mu(x[n],
     shape1[species_int[n]],
@@ -102,10 +102,18 @@ model {
     x_min[species_int[n]],
     x_max[species_int[n]]));
 
-    target += normal_lpdf( y[n] | mu[n], pow(1 + mu[n],2)*1/nu[species_int[n]]);
+    //target += normal_lpdf( y[n] | mu[n], pow(1 + mu[n],2)*1/nu[species_int[n]]);
 
-    }
-
+      if (y[n] == 0)
+        target += log_sum_exp(
+                    bernoulli_lpmf(0 | theta[species_int[n]]),
+                    bernoulli_lpmf(1 | theta[species_int[n]]) +
+                    normal_lpdf( y[n] | mu[n], pow(1 + mu[n],2)*1/nu[species_int[n]])
+        );
+      else
+        target += bernoulli_lpmf(1 | theta[species_int[n]]) +
+        normal_lpdf( y[n] | mu[n], pow(1 + mu[n],2)*1/nu[species_int[n]]);
+  }
 }
 
 
@@ -123,6 +131,18 @@ generated quantities {
     x_min[species_int[n]],
     x_max[species_int[n]]));
 
-    log_lik[n] = normal_lpdf( y[n] | mu[n], pow(1 + mu[n],2)*1/nu[species_int[n]]);
+    //log_lik[n] = normal_lpdf( y[n] | mu[n], pow(1 + mu[n],2)*1/nu[species_int[n]]);
+
+      if (y[n] == 0)
+        log_lik[n] = log_sum_exp(
+                    bernoulli_lpmf(0 | theta[species_int[n]]),
+                    bernoulli_lpmf(1 | theta[species_int[n]]) +
+                    normal_lpdf( y[n] | mu[n], pow(1 + mu[n],2)*1/nu[species_int[n]])
+        );
+      else
+        log_lik[n] = bernoulli_lpmf(1 | theta[species_int[n]]) +
+        normal_lpdf( y[n] | mu[n], pow(1 + mu[n],2)*1/nu[species_int[n]]);
+
   }
 }
+
