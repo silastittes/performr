@@ -521,7 +521,7 @@ public:
         double mu_nu(0);
         mu_nu = vals_r__[pos__++];
         try {
-            writer__.scalar_unconstrain(mu_nu);
+            writer__.scalar_lb_unconstrain(0,mu_nu);
         } catch (const std::exception& e) { 
             throw std::runtime_error(std::string("Error transforming variable mu_nu: ") + e.what());
         }
@@ -662,9 +662,9 @@ public:
             T__ mu_nu;
             (void) mu_nu;  // dummy to suppress unused var warning
             if (jacobian__)
-                mu_nu = in__.scalar_constrain(lp__);
+                mu_nu = in__.scalar_lb_constrain(0,lp__);
             else
-                mu_nu = in__.scalar_constrain();
+                mu_nu = in__.scalar_lb_constrain(0);
 
             vector<T__> logit_theta;
             size_t dim_logit_theta_0__ = n_species;
@@ -923,7 +923,7 @@ public:
         double mu_stretch = in__.scalar_constrain();
         double mu_min = in__.scalar_constrain();
         double mu_max = in__.scalar_constrain();
-        double mu_nu = in__.scalar_constrain();
+        double mu_nu = in__.scalar_lb_constrain(0);
         vector<double> logit_theta;
         size_t dim_logit_theta_0__ = n_species;
         for (size_t k_0__ = 0; k_0__ < dim_logit_theta_0__; ++k_0__) {

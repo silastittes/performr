@@ -51,7 +51,7 @@ parameters {
 
   real mu_min;
   real mu_max;
-  real mu_nu;
+  real <lower = 0>mu_nu;
 
   real logit_theta[n_species];
   real mu_theta;
