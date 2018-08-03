@@ -32,8 +32,7 @@ stan_performance <- function(df, response,
                              min_pr_sig = 1,
                              max_pr_mu,
                              max_pr_sig = 1,
-                             pr_theta1 = 1,
-                             pr_theta2 = 2,
+                             pr_theta = 0,
                              ...){
 
 

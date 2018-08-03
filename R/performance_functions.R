@@ -285,8 +285,7 @@ generate_parameters <- function(
   max_pr_mu,
   nu_pr_shape,
   nu_pr_scale,
-  theta_pr1,
-  theta_pr2,
+  theta_pr,
   pr_sig = 1
 ){
 
@@ -306,9 +305,9 @@ generate_parameters <- function(
   mu_max <- rnorm(1, max_pr_mu, mu_sig)
   x_max <- rnorm(n_spp, mu_max, pr_sig)
 
-  mu_theta1 <- truncnorm::rtruncnorm(1, a = 0, mean = theta_pr1, sd = pr_sig)
-  mu_theta2 <- truncnorm::rtruncnorm(1, a = 0, mean = theta_pr2, sd = pr_sig)
-  theta <- rbeta(n_spp, mu_theta1, mu_theta2)
+  mu_theta <- rnorm(1, mean = theta_pr, sd = pr_sig)
+  logit_theta <- rnorm(n_spp, mu_theta, 1)
+  theta <- plogis(logit_theta)
 
   ed_test <- 1:n_spp %>% map_lgl(~x_min[.x] > x_max[.x]) %>% sum()
   if(ed_test > 0){
@@ -326,7 +325,7 @@ generate_parameters <- function(
   #
   list(shape1 = shape1, shape2 = shape2, stretch = stretch, x_min = x_min, x_max = x_max,
        nu = nu, theta = theta, mu_shape1 = mu_shape1, mu_shape2 = mu_shape2,
-       mu_stretch = mu_stretch, mu_min = mu_min, mu_max = mu_max, mu_nu = mu_nu, mu_theta1, mu_theta2
+       mu_stretch = mu_stretch, mu_min = mu_min, mu_max = mu_max, mu_nu = mu_nu, mu_theta
   )
 }
 
@@ -361,8 +360,7 @@ simulate_data <- function(
   max_pr_mu = 5,
   nu_pr_shape = 4,
   nu_pr_scale = 2,
-  theta_pr1 = 1,
-  theta_pr2 = 1,
+  theta_pr = 0,
   pr_sig = 1
 ){
   true_params <- generate_parameters(
@@ -375,8 +373,7 @@ simulate_data <- function(
     max_pr_mu = max_pr_mu,
     nu_pr_shape = nu_pr_shape,
     nu_pr_scale = nu_pr_scale,
-    theta_pr1 = theta_pr1,
-    theta_pr2 = theta_pr2,
+    theta_pr = theta_pr,
     pr_sig = pr_sig
   )
 

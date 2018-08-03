@@ -40,7 +40,7 @@ static int current_statement_begin__;
 stan::io::program_reader prog_reader__() {
     stan::io::program_reader reader;
     reader.add_event(0, 0, "start", "model_perform");
-    reader.add_event(147, 147, "end", "model_perform");
+    reader.add_event(152, 152, "end", "model_perform");
     return reader;
 }
 
@@ -121,8 +121,7 @@ private:
     double min_pr_sig;
     double max_pr_mu;
     double max_pr_sig;
-    double pr_theta1;
-    double pr_theta2;
+    double pr_theta;
     double nu_pr_shape;
     double nu_pr_scale;
 public:
@@ -265,24 +264,18 @@ public:
             pos__ = 0;
             max_pr_sig = vals_r__[pos__++];
             current_statement_begin__ = 33;
-            context__.validate_dims("data initialization", "pr_theta1", "double", context__.to_vec());
-            pr_theta1 = double(0);
-            vals_r__ = context__.vals_r("pr_theta1");
+            context__.validate_dims("data initialization", "pr_theta", "double", context__.to_vec());
+            pr_theta = double(0);
+            vals_r__ = context__.vals_r("pr_theta");
             pos__ = 0;
-            pr_theta1 = vals_r__[pos__++];
+            pr_theta = vals_r__[pos__++];
             current_statement_begin__ = 34;
-            context__.validate_dims("data initialization", "pr_theta2", "double", context__.to_vec());
-            pr_theta2 = double(0);
-            vals_r__ = context__.vals_r("pr_theta2");
-            pos__ = 0;
-            pr_theta2 = vals_r__[pos__++];
-            current_statement_begin__ = 35;
             context__.validate_dims("data initialization", "nu_pr_shape", "double", context__.to_vec());
             nu_pr_shape = double(0);
             vals_r__ = context__.vals_r("nu_pr_shape");
             pos__ = 0;
             nu_pr_shape = vals_r__[pos__++];
-            current_statement_begin__ = 36;
+            current_statement_begin__ = 35;
             context__.validate_dims("data initialization", "nu_pr_scale", "double", context__.to_vec());
             nu_pr_scale = double(0);
             vals_r__ = context__.vals_r("nu_pr_scale");
@@ -313,9 +306,8 @@ public:
             current_statement_begin__ = 32;
             current_statement_begin__ = 33;
             current_statement_begin__ = 34;
-            current_statement_begin__ = 35;
             check_greater_or_equal(function__,"nu_pr_shape",nu_pr_shape,0);
-            current_statement_begin__ = 36;
+            current_statement_begin__ = 35;
             check_greater_or_equal(function__,"nu_pr_scale",nu_pr_scale,0);
             // initialize data variables
 
@@ -325,40 +317,38 @@ public:
             // validate, set parameter ranges
             num_params_r__ = 0U;
             param_ranges_i__.clear();
-            current_statement_begin__ = 43;
+            current_statement_begin__ = 42;
             validate_non_negative_index("shape1", "n_species", n_species);
             num_params_r__ += n_species;
-            current_statement_begin__ = 44;
+            current_statement_begin__ = 43;
             validate_non_negative_index("shape2", "n_species", n_species);
             num_params_r__ += n_species;
-            current_statement_begin__ = 45;
+            current_statement_begin__ = 44;
             validate_non_negative_index("stretch", "n_species", n_species);
             num_params_r__ += n_species;
-            current_statement_begin__ = 46;
+            current_statement_begin__ = 45;
             validate_non_negative_index("min_max", "2", 2);
             validate_non_negative_index("min_max", "n_species", n_species);
             num_params_r__ += 2 * n_species;
-            current_statement_begin__ = 47;
+            current_statement_begin__ = 46;
             validate_non_negative_index("nu", "n_species", n_species);
             num_params_r__ += n_species;
+            current_statement_begin__ = 48;
+            ++num_params_r__;
             current_statement_begin__ = 49;
             ++num_params_r__;
             current_statement_begin__ = 50;
             ++num_params_r__;
-            current_statement_begin__ = 51;
+            current_statement_begin__ = 52;
             ++num_params_r__;
             current_statement_begin__ = 53;
             ++num_params_r__;
             current_statement_begin__ = 54;
             ++num_params_r__;
-            current_statement_begin__ = 55;
-            ++num_params_r__;
-            current_statement_begin__ = 57;
-            validate_non_negative_index("theta", "n_species", n_species);
+            current_statement_begin__ = 56;
+            validate_non_negative_index("logit_theta", "n_species", n_species);
             num_params_r__ += n_species;
-            current_statement_begin__ = 58;
-            ++num_params_r__;
-            current_statement_begin__ = 59;
+            current_statement_begin__ = 57;
             ++num_params_r__;
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(e, current_statement_begin__, prog_reader__());
@@ -531,51 +521,38 @@ public:
         double mu_nu(0);
         mu_nu = vals_r__[pos__++];
         try {
-            writer__.scalar_lb_unconstrain(0,mu_nu);
+            writer__.scalar_unconstrain(mu_nu);
         } catch (const std::exception& e) { 
             throw std::runtime_error(std::string("Error transforming variable mu_nu: ") + e.what());
         }
 
-        if (!(context__.contains_r("theta")))
-            throw std::runtime_error("variable theta missing");
-        vals_r__ = context__.vals_r("theta");
+        if (!(context__.contains_r("logit_theta")))
+            throw std::runtime_error("variable logit_theta missing");
+        vals_r__ = context__.vals_r("logit_theta");
         pos__ = 0U;
-        validate_non_negative_index("theta", "n_species", n_species);
-        context__.validate_dims("initialization", "theta", "double", context__.to_vec(n_species));
-        std::vector<double> theta(n_species,double(0));
+        validate_non_negative_index("logit_theta", "n_species", n_species);
+        context__.validate_dims("initialization", "logit_theta", "double", context__.to_vec(n_species));
+        std::vector<double> logit_theta(n_species,double(0));
         for (int i0__ = 0U; i0__ < n_species; ++i0__)
-            theta[i0__] = vals_r__[pos__++];
+            logit_theta[i0__] = vals_r__[pos__++];
         for (int i0__ = 0U; i0__ < n_species; ++i0__)
             try {
-            writer__.scalar_lub_unconstrain(0,1,theta[i0__]);
+            writer__.scalar_unconstrain(logit_theta[i0__]);
         } catch (const std::exception& e) { 
-            throw std::runtime_error(std::string("Error transforming variable theta: ") + e.what());
+            throw std::runtime_error(std::string("Error transforming variable logit_theta: ") + e.what());
         }
 
-        if (!(context__.contains_r("mu_theta1")))
-            throw std::runtime_error("variable mu_theta1 missing");
-        vals_r__ = context__.vals_r("mu_theta1");
+        if (!(context__.contains_r("mu_theta")))
+            throw std::runtime_error("variable mu_theta missing");
+        vals_r__ = context__.vals_r("mu_theta");
         pos__ = 0U;
-        context__.validate_dims("initialization", "mu_theta1", "double", context__.to_vec());
-        double mu_theta1(0);
-        mu_theta1 = vals_r__[pos__++];
+        context__.validate_dims("initialization", "mu_theta", "double", context__.to_vec());
+        double mu_theta(0);
+        mu_theta = vals_r__[pos__++];
         try {
-            writer__.scalar_lb_unconstrain(0,mu_theta1);
+            writer__.scalar_unconstrain(mu_theta);
         } catch (const std::exception& e) { 
-            throw std::runtime_error(std::string("Error transforming variable mu_theta1: ") + e.what());
-        }
-
-        if (!(context__.contains_r("mu_theta2")))
-            throw std::runtime_error("variable mu_theta2 missing");
-        vals_r__ = context__.vals_r("mu_theta2");
-        pos__ = 0U;
-        context__.validate_dims("initialization", "mu_theta2", "double", context__.to_vec());
-        double mu_theta2(0);
-        mu_theta2 = vals_r__[pos__++];
-        try {
-            writer__.scalar_lb_unconstrain(0,mu_theta2);
-        } catch (const std::exception& e) { 
-            throw std::runtime_error(std::string("Error transforming variable mu_theta2: ") + e.what());
+            throw std::runtime_error(std::string("Error transforming variable mu_theta: ") + e.what());
         }
 
         params_r__ = writer__.data_r();
@@ -685,44 +662,37 @@ public:
             T__ mu_nu;
             (void) mu_nu;  // dummy to suppress unused var warning
             if (jacobian__)
-                mu_nu = in__.scalar_lb_constrain(0,lp__);
+                mu_nu = in__.scalar_constrain(lp__);
             else
-                mu_nu = in__.scalar_lb_constrain(0);
+                mu_nu = in__.scalar_constrain();
 
-            vector<T__> theta;
-            size_t dim_theta_0__ = n_species;
-            theta.reserve(dim_theta_0__);
-            for (size_t k_0__ = 0; k_0__ < dim_theta_0__; ++k_0__) {
+            vector<T__> logit_theta;
+            size_t dim_logit_theta_0__ = n_species;
+            logit_theta.reserve(dim_logit_theta_0__);
+            for (size_t k_0__ = 0; k_0__ < dim_logit_theta_0__; ++k_0__) {
                 if (jacobian__)
-                    theta.push_back(in__.scalar_lub_constrain(0,1,lp__));
+                    logit_theta.push_back(in__.scalar_constrain(lp__));
                 else
-                    theta.push_back(in__.scalar_lub_constrain(0,1));
+                    logit_theta.push_back(in__.scalar_constrain());
             }
 
-            T__ mu_theta1;
-            (void) mu_theta1;  // dummy to suppress unused var warning
+            T__ mu_theta;
+            (void) mu_theta;  // dummy to suppress unused var warning
             if (jacobian__)
-                mu_theta1 = in__.scalar_lb_constrain(0,lp__);
+                mu_theta = in__.scalar_constrain(lp__);
             else
-                mu_theta1 = in__.scalar_lb_constrain(0);
-
-            T__ mu_theta2;
-            (void) mu_theta2;  // dummy to suppress unused var warning
-            if (jacobian__)
-                mu_theta2 = in__.scalar_lb_constrain(0,lp__);
-            else
-                mu_theta2 = in__.scalar_lb_constrain(0);
+                mu_theta = in__.scalar_constrain();
 
 
             // transformed parameters
-            current_statement_begin__ = 65;
+            current_statement_begin__ = 64;
             validate_non_negative_index("x_min", "n_species", n_species);
             Eigen::Matrix<T__,Eigen::Dynamic,1>  x_min(static_cast<Eigen::VectorXd::Index>(n_species));
             (void) x_min;  // dummy to suppress unused var warning
 
             stan::math::initialize(x_min, DUMMY_VAR__);
             stan::math::fill(x_min,DUMMY_VAR__);
-            current_statement_begin__ = 66;
+            current_statement_begin__ = 65;
             validate_non_negative_index("x_max", "n_species", n_species);
             Eigen::Matrix<T__,Eigen::Dynamic,1>  x_max(static_cast<Eigen::VectorXd::Index>(n_species));
             (void) x_max;  // dummy to suppress unused var warning
@@ -731,12 +701,12 @@ public:
             stan::math::fill(x_max,DUMMY_VAR__);
 
 
-            current_statement_begin__ = 68;
+            current_statement_begin__ = 67;
             for (int i = 1; i <= n_species; ++i) {
 
-                current_statement_begin__ = 69;
+                current_statement_begin__ = 68;
                 stan::math::assign(get_base1_lhs(x_min,i,"x_min",1), get_base1(get_base1(min_max,i,"min_max",1),1,"min_max",2));
-                current_statement_begin__ = 70;
+                current_statement_begin__ = 69;
                 stan::math::assign(get_base1_lhs(x_max,i,"x_max",1), get_base1(get_base1(min_max,i,"min_max",1),2,"min_max",2));
             }
 
@@ -758,65 +728,70 @@ public:
 
             const char* function__ = "validate transformed params";
             (void) function__;  // dummy to suppress unused var warning
+            current_statement_begin__ = 64;
             current_statement_begin__ = 65;
-            current_statement_begin__ = 66;
 
             // model body
             {
-            current_statement_begin__ = 77;
+            current_statement_begin__ = 76;
             validate_non_negative_index("mu", "N", N);
             Eigen::Matrix<T__,Eigen::Dynamic,1>  mu(static_cast<Eigen::VectorXd::Index>(N));
             (void) mu;  // dummy to suppress unused var warning
 
             stan::math::initialize(mu, DUMMY_VAR__);
             stan::math::fill(mu,DUMMY_VAR__);
+            current_statement_begin__ = 77;
+            validate_non_negative_index("theta", "n_species", n_species);
+            vector<T__> theta(n_species);
+            stan::math::initialize(theta, DUMMY_VAR__);
+            stan::math::fill(theta,DUMMY_VAR__);
 
 
-            current_statement_begin__ = 79;
-            lp_accum__.add(normal_log<propto__>(mu_shape1, shape1_pr_mu, shape1_pr_sig));
             current_statement_begin__ = 80;
-            lp_accum__.add(normal_log<propto__>(mu_shape2, shape2_pr_mu, shape2_pr_sig));
+            lp_accum__.add(normal_log<propto__>(mu_shape1, shape1_pr_mu, shape1_pr_sig));
             current_statement_begin__ = 81;
-            lp_accum__.add(normal_log<propto__>(mu_stretch, stretch_pr_mu, stretch_pr_sig));
+            lp_accum__.add(normal_log<propto__>(mu_shape2, shape2_pr_mu, shape2_pr_sig));
             current_statement_begin__ = 82;
-            lp_accum__.add(normal_log<propto__>(mu_min, min_pr_mu, min_pr_sig));
+            lp_accum__.add(normal_log<propto__>(mu_stretch, stretch_pr_mu, stretch_pr_sig));
             current_statement_begin__ = 83;
-            lp_accum__.add(normal_log<propto__>(mu_max, max_pr_mu, max_pr_sig));
+            lp_accum__.add(normal_log<propto__>(mu_min, min_pr_mu, min_pr_sig));
             current_statement_begin__ = 84;
-            lp_accum__.add(normal_log<propto__>(mu_nu, nu_pr_scale, 1));
+            lp_accum__.add(normal_log<propto__>(mu_max, max_pr_mu, max_pr_sig));
             current_statement_begin__ = 85;
-            lp_accum__.add(gamma_log<propto__>(nu, nu_pr_shape, mu_nu));
+            lp_accum__.add(normal_log<propto__>(mu_nu, nu_pr_scale, 1));
             current_statement_begin__ = 86;
-            lp_accum__.add(normal_log<propto__>(shape1, mu_shape1, 1));
+            lp_accum__.add(gamma_log<propto__>(nu, nu_pr_shape, mu_nu));
             current_statement_begin__ = 87;
-            lp_accum__.add(normal_log<propto__>(shape2, mu_shape2, 1));
+            lp_accum__.add(normal_log<propto__>(shape1, mu_shape1, 1));
             current_statement_begin__ = 88;
-            lp_accum__.add(normal_log<propto__>(stretch, mu_stretch, 1));
+            lp_accum__.add(normal_log<propto__>(shape2, mu_shape2, 1));
             current_statement_begin__ = 89;
-            lp_accum__.add(normal_log<propto__>(mu_theta1, pr_theta1, 1));
+            lp_accum__.add(normal_log<propto__>(stretch, mu_stretch, 1));
             current_statement_begin__ = 90;
-            lp_accum__.add(normal_log<propto__>(mu_theta2, pr_theta2, 1));
+            lp_accum__.add(normal_log<propto__>(mu_theta, pr_theta, 1));
             current_statement_begin__ = 91;
-            lp_accum__.add(beta_log<propto__>(theta, mu_theta1, mu_theta2));
-            current_statement_begin__ = 93;
+            lp_accum__.add(normal_log<propto__>(logit_theta, mu_theta, 1));
+            current_statement_begin__ = 92;
+            stan::math::assign(theta, inv_logit(logit_theta));
+            current_statement_begin__ = 94;
             for (int i = 1; i <= n_species; ++i) {
 
-                current_statement_begin__ = 94;
-                lp_accum__.add(normal_log<propto__>(get_base1(get_base1(min_max,i,"min_max",1),1,"min_max",2), mu_min, 1));
                 current_statement_begin__ = 95;
+                lp_accum__.add(normal_log<propto__>(get_base1(get_base1(min_max,i,"min_max",1),1,"min_max",2), mu_min, 1));
+                current_statement_begin__ = 96;
                 lp_accum__.add(normal_log<propto__>(get_base1(get_base1(min_max,i,"min_max",1),2,"min_max",2), mu_max, 1));
             }
-            current_statement_begin__ = 97;
+            current_statement_begin__ = 100;
             for (int n = 1; n <= N; ++n) {
 
-                current_statement_begin__ = 98;
+                current_statement_begin__ = 101;
                 stan::math::assign(get_base1_lhs(mu,n,"mu",1), exp(perform_mu(get_base1(x,n,"x",1),get_base1(shape1,get_base1(species_int,n,"species_int",1),"shape1",1),get_base1(shape2,get_base1(species_int,n,"species_int",1),"shape2",1),get_base1(stretch,get_base1(species_int,n,"species_int",1),"stretch",1),get_base1(x_min,get_base1(species_int,n,"species_int",1),"x_min",1),get_base1(x_max,get_base1(species_int,n,"species_int",1),"x_max",1), pstream__)));
-                current_statement_begin__ = 107;
+                current_statement_begin__ = 108;
                 if (as_bool(logical_eq(get_base1(y,n,"y",1),0))) {
-                    current_statement_begin__ = 108;
+                    current_statement_begin__ = 109;
                     lp_accum__.add(log_sum_exp(bernoulli_log(0,get_base1(theta,get_base1(species_int,n,"species_int",1),"theta",1)),(bernoulli_log(1,get_base1(theta,get_base1(species_int,n,"species_int",1),"theta",1)) + normal_log(get_base1(y,n,"y",1),get_base1(mu,n,"mu",1),((pow((1 + get_base1(mu,n,"mu",1)),2) * 1) / get_base1(nu,get_base1(species_int,n,"species_int",1),"nu",1))))));
                 } else {
-                    current_statement_begin__ = 114;
+                    current_statement_begin__ = 115;
                     lp_accum__.add((bernoulli_log(1,get_base1(theta,get_base1(species_int,n,"species_int",1),"theta",1)) + normal_log(get_base1(y,n,"y",1),get_base1(mu,n,"mu",1),((pow((1 + get_base1(mu,n,"mu",1)),2) * 1) / get_base1(nu,get_base1(species_int,n,"species_int",1),"nu",1)))));
                 }
             }
@@ -858,11 +833,11 @@ public:
         names__.push_back("mu_min");
         names__.push_back("mu_max");
         names__.push_back("mu_nu");
-        names__.push_back("theta");
-        names__.push_back("mu_theta1");
-        names__.push_back("mu_theta2");
+        names__.push_back("logit_theta");
+        names__.push_back("mu_theta");
         names__.push_back("x_min");
         names__.push_back("x_max");
+        names__.push_back("theta");
         names__.push_back("mu");
         names__.push_back("log_lik");
     }
@@ -905,6 +880,7 @@ public:
         dims__.resize(0);
         dimss__.push_back(dims__);
         dims__.resize(0);
+        dims__.push_back(n_species);
         dimss__.push_back(dims__);
         dims__.resize(0);
         dims__.push_back(n_species);
@@ -947,14 +923,13 @@ public:
         double mu_stretch = in__.scalar_constrain();
         double mu_min = in__.scalar_constrain();
         double mu_max = in__.scalar_constrain();
-        double mu_nu = in__.scalar_lb_constrain(0);
-        vector<double> theta;
-        size_t dim_theta_0__ = n_species;
-        for (size_t k_0__ = 0; k_0__ < dim_theta_0__; ++k_0__) {
-            theta.push_back(in__.scalar_lub_constrain(0,1));
+        double mu_nu = in__.scalar_constrain();
+        vector<double> logit_theta;
+        size_t dim_logit_theta_0__ = n_species;
+        for (size_t k_0__ = 0; k_0__ < dim_logit_theta_0__; ++k_0__) {
+            logit_theta.push_back(in__.scalar_constrain());
         }
-        double mu_theta1 = in__.scalar_lb_constrain(0);
-        double mu_theta2 = in__.scalar_lb_constrain(0);
+        double mu_theta = in__.scalar_constrain();
             for (int k_0__ = 0; k_0__ < n_species; ++k_0__) {
             vars__.push_back(shape1[k_0__]);
             }
@@ -979,10 +954,9 @@ public:
         vars__.push_back(mu_max);
         vars__.push_back(mu_nu);
             for (int k_0__ = 0; k_0__ < n_species; ++k_0__) {
-            vars__.push_back(theta[k_0__]);
+            vars__.push_back(logit_theta[k_0__]);
             }
-        vars__.push_back(mu_theta1);
-        vars__.push_back(mu_theta2);
+        vars__.push_back(mu_theta);
 
         if (!include_tparams__) return;
         // declare and define transformed parameters
@@ -994,14 +968,14 @@ public:
         (void) DUMMY_VAR__;  // suppress unused var warning
 
         try {
-            current_statement_begin__ = 65;
+            current_statement_begin__ = 64;
             validate_non_negative_index("x_min", "n_species", n_species);
             vector_d x_min(static_cast<Eigen::VectorXd::Index>(n_species));
             (void) x_min;  // dummy to suppress unused var warning
 
             stan::math::initialize(x_min, std::numeric_limits<double>::quiet_NaN());
             stan::math::fill(x_min,DUMMY_VAR__);
-            current_statement_begin__ = 66;
+            current_statement_begin__ = 65;
             validate_non_negative_index("x_max", "n_species", n_species);
             vector_d x_max(static_cast<Eigen::VectorXd::Index>(n_species));
             (void) x_max;  // dummy to suppress unused var warning
@@ -1010,18 +984,18 @@ public:
             stan::math::fill(x_max,DUMMY_VAR__);
 
 
-            current_statement_begin__ = 68;
+            current_statement_begin__ = 67;
             for (int i = 1; i <= n_species; ++i) {
 
-                current_statement_begin__ = 69;
+                current_statement_begin__ = 68;
                 stan::math::assign(get_base1_lhs(x_min,i,"x_min",1), get_base1(get_base1(min_max,i,"min_max",1),1,"min_max",2));
-                current_statement_begin__ = 70;
+                current_statement_begin__ = 69;
                 stan::math::assign(get_base1_lhs(x_max,i,"x_max",1), get_base1(get_base1(min_max,i,"min_max",1),2,"min_max",2));
             }
 
             // validate transformed parameters
+            current_statement_begin__ = 64;
             current_statement_begin__ = 65;
-            current_statement_begin__ = 66;
 
             // write transformed parameters
             for (int k_0__ = 0; k_0__ < n_species; ++k_0__) {
@@ -1033,14 +1007,19 @@ public:
 
             if (!include_gqs__) return;
             // declare and define generated quantities
-            current_statement_begin__ = 124;
+            current_statement_begin__ = 125;
+            validate_non_negative_index("theta", "n_species", n_species);
+            vector<double> theta(n_species, 0.0);
+            stan::math::initialize(theta, std::numeric_limits<double>::quiet_NaN());
+            stan::math::fill(theta,DUMMY_VAR__);
+            current_statement_begin__ = 126;
             validate_non_negative_index("mu", "N", N);
             vector_d mu(static_cast<Eigen::VectorXd::Index>(N));
             (void) mu;  // dummy to suppress unused var warning
 
             stan::math::initialize(mu, std::numeric_limits<double>::quiet_NaN());
             stan::math::fill(mu,DUMMY_VAR__);
-            current_statement_begin__ = 125;
+            current_statement_begin__ = 127;
             validate_non_negative_index("log_lik", "N", N);
             vector_d log_lik(static_cast<Eigen::VectorXd::Index>(N));
             (void) log_lik;  // dummy to suppress unused var warning
@@ -1049,26 +1028,32 @@ public:
             stan::math::fill(log_lik,DUMMY_VAR__);
 
 
-            current_statement_begin__ = 126;
+            current_statement_begin__ = 128;
+            stan::math::assign(theta, inv_logit(logit_theta));
+            current_statement_begin__ = 130;
             for (int n = 1; n <= N; ++n) {
 
-                current_statement_begin__ = 127;
+                current_statement_begin__ = 131;
                 stan::math::assign(get_base1_lhs(mu,n,"mu",1), exp(perform_mu(get_base1(x,n,"x",1),get_base1(shape1,get_base1(species_int,n,"species_int",1),"shape1",1),get_base1(shape2,get_base1(species_int,n,"species_int",1),"shape2",1),get_base1(stretch,get_base1(species_int,n,"species_int",1),"stretch",1),get_base1(x_min,get_base1(species_int,n,"species_int",1),"x_min",1),get_base1(x_max,get_base1(species_int,n,"species_int",1),"x_max",1), pstream__)));
-                current_statement_begin__ = 136;
+                current_statement_begin__ = 141;
                 if (as_bool(logical_eq(get_base1(y,n,"y",1),0))) {
-                    current_statement_begin__ = 137;
+                    current_statement_begin__ = 142;
                     stan::math::assign(get_base1_lhs(log_lik,n,"log_lik",1), log_sum_exp(bernoulli_log(0,get_base1(theta,get_base1(species_int,n,"species_int",1),"theta",1)),(bernoulli_log(1,get_base1(theta,get_base1(species_int,n,"species_int",1),"theta",1)) + normal_log(get_base1(y,n,"y",1),get_base1(mu,n,"mu",1),((pow((1 + get_base1(mu,n,"mu",1)),2) * 1) / get_base1(nu,get_base1(species_int,n,"species_int",1),"nu",1))))));
                 } else {
-                    current_statement_begin__ = 143;
+                    current_statement_begin__ = 148;
                     stan::math::assign(get_base1_lhs(log_lik,n,"log_lik",1), (bernoulli_log(1,get_base1(theta,get_base1(species_int,n,"species_int",1),"theta",1)) + normal_log(get_base1(y,n,"y",1),get_base1(mu,n,"mu",1),((pow((1 + get_base1(mu,n,"mu",1)),2) * 1) / get_base1(nu,get_base1(species_int,n,"species_int",1),"nu",1)))));
                 }
             }
 
             // validate generated quantities
-            current_statement_begin__ = 124;
             current_statement_begin__ = 125;
+            current_statement_begin__ = 126;
+            current_statement_begin__ = 127;
 
             // write generated quantities
+            for (int k_0__ = 0; k_0__ < n_species; ++k_0__) {
+            vars__.push_back(theta[k_0__]);
+            }
             for (int k_0__ = 0; k_0__ < N; ++k_0__) {
             vars__.push_back(mu[k_0__]);
             }
@@ -1157,14 +1142,11 @@ public:
         param_names__.push_back(param_name_stream__.str());
         for (int k_0__ = 1; k_0__ <= n_species; ++k_0__) {
             param_name_stream__.str(std::string());
-            param_name_stream__ << "theta" << '.' << k_0__;
+            param_name_stream__ << "logit_theta" << '.' << k_0__;
             param_names__.push_back(param_name_stream__.str());
         }
         param_name_stream__.str(std::string());
-        param_name_stream__ << "mu_theta1";
-        param_names__.push_back(param_name_stream__.str());
-        param_name_stream__.str(std::string());
-        param_name_stream__ << "mu_theta2";
+        param_name_stream__ << "mu_theta";
         param_names__.push_back(param_name_stream__.str());
 
         if (!include_gqs__ && !include_tparams__) return;
@@ -1180,6 +1162,11 @@ public:
         }
 
         if (!include_gqs__) return;
+        for (int k_0__ = 1; k_0__ <= n_species; ++k_0__) {
+            param_name_stream__.str(std::string());
+            param_name_stream__ << "theta" << '.' << k_0__;
+            param_names__.push_back(param_name_stream__.str());
+        }
         for (int k_0__ = 1; k_0__ <= N; ++k_0__) {
             param_name_stream__.str(std::string());
             param_name_stream__ << "mu" << '.' << k_0__;
@@ -1244,14 +1231,11 @@ public:
         param_names__.push_back(param_name_stream__.str());
         for (int k_0__ = 1; k_0__ <= n_species; ++k_0__) {
             param_name_stream__.str(std::string());
-            param_name_stream__ << "theta" << '.' << k_0__;
+            param_name_stream__ << "logit_theta" << '.' << k_0__;
             param_names__.push_back(param_name_stream__.str());
         }
         param_name_stream__.str(std::string());
-        param_name_stream__ << "mu_theta1";
-        param_names__.push_back(param_name_stream__.str());
-        param_name_stream__.str(std::string());
-        param_name_stream__ << "mu_theta2";
+        param_name_stream__ << "mu_theta";
         param_names__.push_back(param_name_stream__.str());
 
         if (!include_gqs__ && !include_tparams__) return;
@@ -1267,6 +1251,11 @@ public:
         }
 
         if (!include_gqs__) return;
+        for (int k_0__ = 1; k_0__ <= n_species; ++k_0__) {
+            param_name_stream__.str(std::string());
+            param_name_stream__ << "theta" << '.' << k_0__;
+            param_names__.push_back(param_name_stream__.str());
+        }
         for (int k_0__ = 1; k_0__ <= N; ++k_0__) {
             param_name_stream__.str(std::string());
             param_name_stream__ << "mu" << '.' << k_0__;
