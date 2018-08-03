@@ -147,7 +147,7 @@ posterior_predict <- function(x, par_df){
     zero_idx <- x < x_min | x > x_max
     mu_species <- mu %>%
       map_dbl(function(x){
-        rnorm(n = 1, mean = x, sd = (1+x)^2*1/nu) %>%
+        rnorm(n = 1, mean = x, sd = (1+x)^1*1/nu) %>%
           (function(z) ifelse(z < 0, 0, z)) %>%
           (function(r) ifelse(rbinom(1, 1, theta) == 0, 0, r)) #zero-inflated part
       }) %>%
@@ -202,13 +202,13 @@ posterior_quantile <- function(x, p, par_df){
     mu <- performance_mu(x, shape1, shape2, stretch, x_min, x_max)
     lower <- mu %>%
       map_dbl(function(x){
-        qnorm(p = low_q, mean = x, sd = (1+x)^2*1/nu) %>%
+        qnorm(p = low_q, mean = x, sd = (1+x)^1*1/nu) %>%
           (function(z) ifelse(z < 0, 0, z)) %>%
           (function(r) ifelse(rbinom(1, 1, theta) == 0, 0, r)) #zero-inflated part
       })
     upper <- mu %>%
       map_dbl(function(x){
-        qnorm(p = hi_q, mean = x, sd = (1+x)^2*1/nu) %>%
+        qnorm(p = hi_q, mean = x, sd = (1+x)^1*1/nu) %>%
           (function(z) ifelse(z < 0, 0, z)) %>%
           (function(r) ifelse(rbinom(1, 1, theta) == 0, 0, r)) #zero-inflated part
       })
