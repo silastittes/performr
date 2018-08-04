@@ -166,7 +166,7 @@ posterior_predict <- function(x, par_df){
 
 #' Generate psuedo-observed quantiles from performance curve parameters
 #'
-#' Constructs a tidy data frame of generated data given a set of input parameters.
+#' Constructs a tidy data frame of generated data given a set of input parameters. The additional structural zeros (mortality) that are predicted with the posterior predict function are NOT predicted when constructing these intervals.
 #' @importFrom purrr map map_lgl map_dbl map_df
 #' @importFrom magrittr set_colnames
 #' @importFrom tidyr gather
@@ -205,8 +205,8 @@ posterior_quantile <- function(x, p, par_df){
     lower <- mu %>%
       map_dbl(function(x){
         qnorm(p = low_q, mean = x, sd = (1+x)^1*1/nu) %>%
-          (function(z) ifelse(z < 0, 0, z)) %>%
-          (function(r) ifelse(rbinom(1, 1, plogis(beta_0 + beta_1 * x)) == 0, 0, r)) #zero-inflated part
+          (function(z) ifelse(z < 0, 0, z))
+          #(function(r) ifelse(rbinom(1, 1, plogis(beta_0 + beta_1 * x)) == 0, 0, r)) #zero-inflated part
       })
     upper <- mu %>%
       map_dbl(function(x){
