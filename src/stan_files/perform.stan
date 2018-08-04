@@ -59,8 +59,8 @@ parameters {
   //real mu_theta;
   real mu_beta0;
   real mu_beta1;
-  vector[n_species] beta_0;
-  vector[n_species] beta_1;
+  real beta_0[n_species];
+  real beta_1[n_species];
 
 
 }

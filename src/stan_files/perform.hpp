@@ -570,12 +570,13 @@ public:
         vals_r__ = context__.vals_r("beta_0");
         pos__ = 0U;
         validate_non_negative_index("beta_0", "n_species", n_species);
-        context__.validate_dims("initialization", "beta_0", "vector_d", context__.to_vec(n_species));
-        vector_d beta_0(static_cast<Eigen::VectorXd::Index>(n_species));
-        for (int j1__ = 0U; j1__ < n_species; ++j1__)
-            beta_0(j1__) = vals_r__[pos__++];
-        try {
-            writer__.vector_unconstrain(beta_0);
+        context__.validate_dims("initialization", "beta_0", "double", context__.to_vec(n_species));
+        std::vector<double> beta_0(n_species,double(0));
+        for (int i0__ = 0U; i0__ < n_species; ++i0__)
+            beta_0[i0__] = vals_r__[pos__++];
+        for (int i0__ = 0U; i0__ < n_species; ++i0__)
+            try {
+            writer__.scalar_unconstrain(beta_0[i0__]);
         } catch (const std::exception& e) { 
             throw std::runtime_error(std::string("Error transforming variable beta_0: ") + e.what());
         }
@@ -585,12 +586,13 @@ public:
         vals_r__ = context__.vals_r("beta_1");
         pos__ = 0U;
         validate_non_negative_index("beta_1", "n_species", n_species);
-        context__.validate_dims("initialization", "beta_1", "vector_d", context__.to_vec(n_species));
-        vector_d beta_1(static_cast<Eigen::VectorXd::Index>(n_species));
-        for (int j1__ = 0U; j1__ < n_species; ++j1__)
-            beta_1(j1__) = vals_r__[pos__++];
-        try {
-            writer__.vector_unconstrain(beta_1);
+        context__.validate_dims("initialization", "beta_1", "double", context__.to_vec(n_species));
+        std::vector<double> beta_1(n_species,double(0));
+        for (int i0__ = 0U; i0__ < n_species; ++i0__)
+            beta_1[i0__] = vals_r__[pos__++];
+        for (int i0__ = 0U; i0__ < n_species; ++i0__)
+            try {
+            writer__.scalar_unconstrain(beta_1[i0__]);
         } catch (const std::exception& e) { 
             throw std::runtime_error(std::string("Error transforming variable beta_1: ") + e.what());
         }
@@ -720,19 +722,25 @@ public:
             else
                 mu_beta1 = in__.scalar_constrain();
 
-            Eigen::Matrix<T__,Eigen::Dynamic,1>  beta_0;
-            (void) beta_0;  // dummy to suppress unused var warning
-            if (jacobian__)
-                beta_0 = in__.vector_constrain(n_species,lp__);
-            else
-                beta_0 = in__.vector_constrain(n_species);
+            vector<T__> beta_0;
+            size_t dim_beta_0_0__ = n_species;
+            beta_0.reserve(dim_beta_0_0__);
+            for (size_t k_0__ = 0; k_0__ < dim_beta_0_0__; ++k_0__) {
+                if (jacobian__)
+                    beta_0.push_back(in__.scalar_constrain(lp__));
+                else
+                    beta_0.push_back(in__.scalar_constrain());
+            }
 
-            Eigen::Matrix<T__,Eigen::Dynamic,1>  beta_1;
-            (void) beta_1;  // dummy to suppress unused var warning
-            if (jacobian__)
-                beta_1 = in__.vector_constrain(n_species,lp__);
-            else
-                beta_1 = in__.vector_constrain(n_species);
+            vector<T__> beta_1;
+            size_t dim_beta_1_0__ = n_species;
+            beta_1.reserve(dim_beta_1_0__);
+            for (size_t k_0__ = 0; k_0__ < dim_beta_1_0__; ++k_0__) {
+                if (jacobian__)
+                    beta_1.push_back(in__.scalar_constrain(lp__));
+                else
+                    beta_1.push_back(in__.scalar_constrain());
+            }
 
 
             // transformed parameters
@@ -1007,8 +1015,16 @@ public:
         double mu_nu = in__.scalar_lb_constrain(0);
         double mu_beta0 = in__.scalar_constrain();
         double mu_beta1 = in__.scalar_constrain();
-        vector_d beta_0 = in__.vector_constrain(n_species);
-        vector_d beta_1 = in__.vector_constrain(n_species);
+        vector<double> beta_0;
+        size_t dim_beta_0_0__ = n_species;
+        for (size_t k_0__ = 0; k_0__ < dim_beta_0_0__; ++k_0__) {
+            beta_0.push_back(in__.scalar_constrain());
+        }
+        vector<double> beta_1;
+        size_t dim_beta_1_0__ = n_species;
+        for (size_t k_0__ = 0; k_0__ < dim_beta_1_0__; ++k_0__) {
+            beta_1.push_back(in__.scalar_constrain());
+        }
             for (int k_0__ = 0; k_0__ < n_species; ++k_0__) {
             vars__.push_back(shape1[k_0__]);
             }
