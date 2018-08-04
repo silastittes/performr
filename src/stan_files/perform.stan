@@ -68,7 +68,7 @@ parameters {
 
 
 transformed parameters{
-  real power = 1;
+  real power = 2;
   vector[n_species] x_min;
   vector[n_species] x_max;
   vector[N] mu;

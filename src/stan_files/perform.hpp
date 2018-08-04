@@ -750,7 +750,7 @@ public:
 
             stan::math::initialize(power, DUMMY_VAR__);
             stan::math::fill(power,DUMMY_VAR__);
-            stan::math::assign(power,1);
+            stan::math::assign(power,2);
             current_statement_begin__ = 72;
             validate_non_negative_index("x_min", "n_species", n_species);
             Eigen::Matrix<T__,Eigen::Dynamic,1>  x_min(static_cast<Eigen::VectorXd::Index>(n_species));
@@ -1089,7 +1089,7 @@ public:
 
             stan::math::initialize(power, std::numeric_limits<double>::quiet_NaN());
             stan::math::fill(power,DUMMY_VAR__);
-            stan::math::assign(power,1);
+            stan::math::assign(power,2);
             current_statement_begin__ = 72;
             validate_non_negative_index("x_min", "n_species", n_species);
             vector_d x_min(static_cast<Eigen::VectorXd::Index>(n_species));
