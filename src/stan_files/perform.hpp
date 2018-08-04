@@ -40,7 +40,7 @@ static int current_statement_begin__;
 stan::io::program_reader prog_reader__() {
     stan::io::program_reader reader;
     reader.add_event(0, 0, "start", "model_perform");
-    reader.add_event(158, 158, "end", "model_perform");
+    reader.add_event(160, 160, "end", "model_perform");
     return reader;
 }
 
@@ -736,13 +736,6 @@ public:
 
 
             // transformed parameters
-            current_statement_begin__ = 71;
-            T__ power;
-            (void) power;  // dummy to suppress unused var warning
-
-            stan::math::initialize(power, DUMMY_VAR__);
-            stan::math::fill(power,DUMMY_VAR__);
-            stan::math::assign(power,2);
             current_statement_begin__ = 72;
             validate_non_negative_index("x_min", "n_species", n_species);
             Eigen::Matrix<T__,Eigen::Dynamic,1>  x_min(static_cast<Eigen::VectorXd::Index>(n_species));
@@ -791,11 +784,6 @@ public:
             }
 
             // validate transformed parameters
-            if (stan::math::is_uninitialized(power)) {
-                std::stringstream msg__;
-                msg__ << "Undefined transformed parameter: power";
-                throw std::runtime_error(msg__.str());
-            }
             for (int i0__ = 0; i0__ < n_species; ++i0__) {
                 if (stan::math::is_uninitialized(x_min(i0__))) {
                     std::stringstream msg__;
@@ -827,7 +815,6 @@ public:
 
             const char* function__ = "validate transformed params";
             (void) function__;  // dummy to suppress unused var warning
-            current_statement_begin__ = 71;
             current_statement_begin__ = 72;
             current_statement_begin__ = 73;
             current_statement_begin__ = 74;
@@ -877,10 +864,10 @@ public:
                 current_statement_begin__ = 123;
                 if (as_bool(logical_eq(get_base1(y,n,"y",1),0))) {
                     current_statement_begin__ = 124;
-                    lp_accum__.add(log_sum_exp(bernoulli_log(0,get_base1(theta,n,"theta",1)),(bernoulli_log(1,get_base1(theta,n,"theta",1)) + normal_log(get_base1(y,n,"y",1),get_base1(mu,n,"mu",1),((pow((1 + get_base1(mu,n,"mu",1)),power) * 1) / get_base1(nu,get_base1(species_int,n,"species_int",1),"nu",1))))));
+                    lp_accum__.add(log_sum_exp(bernoulli_log(0,get_base1(theta,n,"theta",1)),(bernoulli_log(1,get_base1(theta,n,"theta",1)) + normal_log(get_base1(y,n,"y",1),get_base1(mu,n,"mu",1),(((1 + get_base1(mu,n,"mu",1)) * 1) / get_base1(nu,get_base1(species_int,n,"species_int",1),"nu",1))))));
                 } else {
                     current_statement_begin__ = 130;
-                    lp_accum__.add((bernoulli_log(1,get_base1(theta,n,"theta",1)) + normal_log(get_base1(y,n,"y",1),get_base1(mu,n,"mu",1),((pow((1 + get_base1(mu,n,"mu",1)),power) * 1) / get_base1(nu,get_base1(species_int,n,"species_int",1),"nu",1)))));
+                    lp_accum__.add((bernoulli_log(1,get_base1(theta,n,"theta",1)) + normal_log(get_base1(y,n,"y",1),get_base1(mu,n,"mu",1),(((1 + get_base1(mu,n,"mu",1)) * 1) / get_base1(nu,get_base1(species_int,n,"species_int",1),"nu",1)))));
                 }
             }
 
@@ -924,7 +911,6 @@ public:
         names__.push_back("mu_beta1");
         names__.push_back("beta_0");
         names__.push_back("beta_1");
-        names__.push_back("power");
         names__.push_back("x_min");
         names__.push_back("x_max");
         names__.push_back("mu");
@@ -973,8 +959,6 @@ public:
         dimss__.push_back(dims__);
         dims__.resize(0);
         dims__.push_back(n_species);
-        dimss__.push_back(dims__);
-        dims__.resize(0);
         dimss__.push_back(dims__);
         dims__.resize(0);
         dims__.push_back(n_species);
@@ -1067,13 +1051,6 @@ public:
         (void) DUMMY_VAR__;  // suppress unused var warning
 
         try {
-            current_statement_begin__ = 71;
-            double power(0.0);
-            (void) power;  // dummy to suppress unused var warning
-
-            stan::math::initialize(power, std::numeric_limits<double>::quiet_NaN());
-            stan::math::fill(power,DUMMY_VAR__);
-            stan::math::assign(power,2);
             current_statement_begin__ = 72;
             validate_non_negative_index("x_min", "n_species", n_species);
             vector_d x_min(static_cast<Eigen::VectorXd::Index>(n_species));
@@ -1122,14 +1099,12 @@ public:
             }
 
             // validate transformed parameters
-            current_statement_begin__ = 71;
             current_statement_begin__ = 72;
             current_statement_begin__ = 73;
             current_statement_begin__ = 74;
             current_statement_begin__ = 75;
 
             // write transformed parameters
-        vars__.push_back(power);
             for (int k_0__ = 0; k_0__ < n_species; ++k_0__) {
             vars__.push_back(x_min[k_0__]);
             }
@@ -1145,7 +1120,7 @@ public:
 
             if (!include_gqs__) return;
             // declare and define generated quantities
-            current_statement_begin__ = 141;
+            current_statement_begin__ = 142;
             validate_non_negative_index("log_lik", "N", N);
             vector_d log_lik(static_cast<Eigen::VectorXd::Index>(N));
             (void) log_lik;  // dummy to suppress unused var warning
@@ -1154,21 +1129,21 @@ public:
             stan::math::fill(log_lik,DUMMY_VAR__);
 
 
-            current_statement_begin__ = 142;
+            current_statement_begin__ = 143;
             for (int n = 1; n <= N; ++n) {
 
-                current_statement_begin__ = 144;
+                current_statement_begin__ = 145;
                 if (as_bool(logical_eq(get_base1(y,n,"y",1),0))) {
-                    current_statement_begin__ = 145;
-                    stan::math::assign(get_base1_lhs(log_lik,n,"log_lik",1), log_sum_exp(bernoulli_log(0,get_base1(theta,n,"theta",1)),(bernoulli_log(1,get_base1(theta,n,"theta",1)) + normal_log(get_base1(y,n,"y",1),get_base1(mu,n,"mu",1),((pow((1 + get_base1(mu,n,"mu",1)),power) * 1) / get_base1(nu,get_base1(species_int,n,"species_int",1),"nu",1))))));
+                    current_statement_begin__ = 146;
+                    stan::math::assign(get_base1_lhs(log_lik,n,"log_lik",1), log_sum_exp(bernoulli_log(0,get_base1(theta,n,"theta",1)),(bernoulli_log(1,get_base1(theta,n,"theta",1)) + normal_log(get_base1(y,n,"y",1),get_base1(mu,n,"mu",1),(((1 + get_base1(mu,n,"mu",1)) * 1) / get_base1(nu,get_base1(species_int,n,"species_int",1),"nu",1))))));
                 } else {
-                    current_statement_begin__ = 152;
-                    stan::math::assign(get_base1_lhs(log_lik,n,"log_lik",1), (bernoulli_log(1,get_base1(theta,n,"theta",1)) + normal_log(get_base1(y,n,"y",1),get_base1(mu,n,"mu",1),((pow((1 + get_base1(mu,n,"mu",1)),power) * 1) / get_base1(nu,get_base1(species_int,n,"species_int",1),"nu",1)))));
+                    current_statement_begin__ = 153;
+                    stan::math::assign(get_base1_lhs(log_lik,n,"log_lik",1), (bernoulli_log(1,get_base1(theta,n,"theta",1)) + normal_log(get_base1(y,n,"y",1),get_base1(mu,n,"mu",1),(((1 + get_base1(mu,n,"mu",1)) * 1) / get_base1(nu,get_base1(species_int,n,"species_int",1),"nu",1)))));
                 }
             }
 
             // validate generated quantities
-            current_statement_begin__ = 141;
+            current_statement_begin__ = 142;
 
             // write generated quantities
             for (int k_0__ = 0; k_0__ < N; ++k_0__) {
@@ -1272,9 +1247,6 @@ public:
         }
 
         if (!include_gqs__ && !include_tparams__) return;
-        param_name_stream__.str(std::string());
-        param_name_stream__ << "power";
-        param_names__.push_back(param_name_stream__.str());
         for (int k_0__ = 1; k_0__ <= n_species; ++k_0__) {
             param_name_stream__.str(std::string());
             param_name_stream__ << "x_min" << '.' << k_0__;
@@ -1372,9 +1344,6 @@ public:
         }
 
         if (!include_gqs__ && !include_tparams__) return;
-        param_name_stream__.str(std::string());
-        param_name_stream__ << "power";
-        param_names__.push_back(param_name_stream__.str());
         for (int k_0__ = 1; k_0__ <= n_species; ++k_0__) {
             param_name_stream__.str(std::string());
             param_name_stream__ << "x_min" << '.' << k_0__;

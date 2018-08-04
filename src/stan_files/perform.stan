@@ -68,7 +68,7 @@ parameters {
 
 
 transformed parameters{
-  real power = 2;
+  //real power = 2;
   vector[n_species] x_min;
   vector[n_species] x_max;
   vector[N] mu;
@@ -124,11 +124,12 @@ model {
         target += log_sum_exp(
                     bernoulli_lpmf(0 | theta[n]),
                     bernoulli_lpmf(1 | theta[n]) +
-                    normal_lpdf( y[n] | mu[n], pow(1 + mu[n], power) * 1/nu[species_int[n]])
+                    normal_lpdf( y[n] | mu[n], (1 + mu[n]) * 1/nu[species_int[n]])
         );
       else
         target += bernoulli_lpmf(1 | theta[n]) +
-        normal_lpdf( y[n] | mu[n], pow(1 + mu[n], power) * 1/nu[species_int[n]]);
+        normal_lpdf( y[n] | mu[n], (1 + mu[n]) * 1/nu[species_int[n]]);
+
   }
 }
 
@@ -145,12 +146,13 @@ generated quantities {
         log_lik[n] = log_sum_exp(
                     bernoulli_lpmf(0 | theta[n]),
                     bernoulli_lpmf(1 | theta[n]) +
-                    normal_lpdf( y[n] | mu[n], pow(1 + mu[n], power) * 1/nu[species_int[n]])
+                    normal_lpdf( y[n] | mu[n], (1 + mu[n]) * 1/nu[species_int[n]])
                     );
 
       else
         log_lik[n] = bernoulli_lpmf(1 | theta[n]) +
-        normal_lpdf( y[n] | mu[n], pow(1 + mu[n], power) * 1/nu[species_int[n]]);
+        //normal_lpdf( y[n] | mu[n], pow(1 + mu[n], power) * 1/nu[species_int[n]]);
+        normal_lpdf( y[n] | mu[n], (1 + mu[n]) * 1/nu[species_int[n]]);
 
   }
 }
