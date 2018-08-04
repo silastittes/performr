@@ -59,8 +59,8 @@ parameters {
   //real mu_theta;
   real mu_beta0;
   real mu_beta1;
-  real beta_0[n_species];
-  real beta_1[n_species];
+  vector[n_species] beta_0_raw;
+  vector[n_species] beta_1_raw;
 
 
 }
@@ -73,6 +73,11 @@ transformed parameters{
   vector[n_species] x_max;
   vector[N] mu;
   vector[N] theta;
+  vector[n_species] beta_0;
+  vector[n_species] beta_1;
+
+  beta_0 = beta_0_raw + mu_beta0;
+  beta_1 = beta_1_raw + mu_beta1;
 
 
   for(i in 1:n_species){
@@ -109,8 +114,8 @@ model {
   //logit_theta ~ normal(mu_theta, 1);
   mu_beta0 ~ normal(pr_beta0, 1);
   mu_beta1 ~ normal(pr_beta1, 1);
-  beta_0 ~ normal(mu_beta0, 1);
-  beta_1 ~ normal(mu_beta1, 1);
+  beta_0_raw ~ normal(0, 1);
+  beta_1_raw ~ normal(0, 1);
 
 
   for(i in 1:n_species){
