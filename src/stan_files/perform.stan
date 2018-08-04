@@ -30,7 +30,9 @@ data {
 	real min_pr_sig;
 	real max_pr_mu;
 	real max_pr_sig;
-	real pr_theta;
+	//real pr_theta;
+	real pr_beta0;
+	real pr_beta1;
 	real <lower = 0> nu_pr_shape;
 	real <lower = 0> nu_pr_scale;
 }
@@ -53,8 +55,13 @@ parameters {
   real mu_max;
   real <lower = 0>mu_nu;
 
-  real logit_theta[n_species];
-  real mu_theta;
+  //real logit_theta[n_species];
+  //real mu_theta;
+  real mu_beta0;
+  real mu_beta1;
+  real beta_0[n_species];
+  real beta_1[n_species];
+
 
 }
 
@@ -64,18 +71,29 @@ transformed parameters{
   real power = 1;
   vector[n_species] x_min;
   vector[n_species] x_max;
+  vector[N] mu;
+  vector[N] theta;
+
 
   for(i in 1:n_species){
     x_min[i] = min_max[i][1];
     x_max[i] = min_max[i][2];
-}
+    }
+
+  for(n in 1:N){
+    mu[n] = exp(perform_mu(x[n],
+                shape1[species_int[n]],
+                shape2[species_int[n]],
+                stretch[species_int[n]],
+                x_min[species_int[n]],
+                x_max[species_int[n]]));
+
+    theta[n] = inv_logit(beta_0[species_int[n]] + beta_1[species_int[n]] * mu[n]);
+  }
 }
 
 
 model {
- vector[N] mu;
- real theta[n_species];
-
 
   mu_shape1 ~ normal(shape1_pr_mu, shape1_pr_sig);
   mu_shape2 ~ normal(shape2_pr_mu, shape2_pr_sig);
@@ -87,9 +105,13 @@ model {
   shape1 ~ normal(mu_shape1, 1);
   shape2 ~ normal(mu_shape2, 1);
   stretch ~ normal(mu_stretch, 1);
-  mu_theta ~ normal(pr_theta, 1);
-  logit_theta ~ normal(mu_theta, 1);
-  theta = inv_logit(logit_theta);
+  //mu_theta ~ normal(pr_theta, 1);
+  //logit_theta ~ normal(mu_theta, 1);
+  mu_beta0 ~ normal(pr_beta0, 1);
+  mu_beta1 ~ normal(pr_beta1, 1);
+  beta_0 ~ normal(mu_beta0, 1);
+  beta_1 ~ normal(mu_beta1, 1);
+
 
   for(i in 1:n_species){
     min_max[i][1] ~ normal(mu_min, 1);
@@ -98,56 +120,41 @@ model {
 
 
   for (n in 1:N) {
-    mu[n] = exp(perform_mu(x[n],
-    shape1[species_int[n]],
-    shape2[species_int[n]],
-    stretch[species_int[n]],
-    x_min[species_int[n]],
-    x_max[species_int[n]]));
 
       if (y[n] == 0)
         target += log_sum_exp(
-                    bernoulli_lpmf(0 | theta[species_int[n]]),
-                    bernoulli_lpmf(1 | theta[species_int[n]]) +
+                    bernoulli_lpmf(0 | theta[n]),
+                    bernoulli_lpmf(1 | theta[n]) +
                     normal_lpdf( y[n] | mu[n], pow(1 + mu[n], power) * 1/nu[species_int[n]])
         );
       else
-        target += bernoulli_lpmf(1 | theta[species_int[n]]) +
+        target += bernoulli_lpmf(1 | theta[n]) +
         normal_lpdf( y[n] | mu[n], pow(1 + mu[n], power) * 1/nu[species_int[n]]);
   }
 }
+
 
 
 
 //compute log like for psis-loo
 generated quantities {
 
-  real theta[n_species];
-  vector[N] mu;
   vector[N] log_lik;
-  theta = inv_logit(logit_theta);
-
   for (n in 1:N){
-    mu[n] = exp(perform_mu(x[n],
-    shape1[species_int[n]],
-    shape2[species_int[n]],
-    stretch[species_int[n]],
-    x_min[species_int[n]],
-    x_max[species_int[n]]));
-
-
-    //log_lik[n] = normal_lpdf( y[n] | mu[n], pow(1 + mu[n],2)*1/nu[species_int[n]]);
 
       if (y[n] == 0)
         log_lik[n] = log_sum_exp(
-                    bernoulli_lpmf(0 | theta[species_int[n]]),
-                    bernoulli_lpmf(1 | theta[species_int[n]]) +
+                    bernoulli_lpmf(0 | theta[n]),
+                    bernoulli_lpmf(1 | theta[n]) +
                     normal_lpdf( y[n] | mu[n], pow(1 + mu[n], power) * 1/nu[species_int[n]])
-        );
+                    );
+
       else
-        log_lik[n] = bernoulli_lpmf(1 | theta[species_int[n]]) +
+        log_lik[n] = bernoulli_lpmf(1 | theta[n]) +
         normal_lpdf( y[n] | mu[n], pow(1 + mu[n], power) * 1/nu[species_int[n]]);
 
   }
 }
+
+
 

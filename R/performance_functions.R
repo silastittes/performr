@@ -30,7 +30,7 @@ perform_df <- function(stan_out, species_order){
 
   new_post <- stan_out %>% rstan::extract()
 
-  params <- c("x_min", "x_max", "shape1", "shape2", "stretch", "nu", "theta")
+  params <- c("x_min", "x_max", "shape1", "shape2", "stretch", "nu", "beta_0", "beta_1")
 
   par_df <- params %>% map( ~{
     new_post[[.x]] %>%
@@ -142,14 +142,15 @@ posterior_predict <- function(x, par_df){
     shape2 <- par_df$shape2[.x]
     stretch <- par_df$stretch[.x]
     nu <- par_df$nu[.x]
-    theta <- par_df$theta[.x]
+    beta_0 <- par_df$beta_0[.x]
+    beta_1 <- par_df$beta_1[.x]
     mu <- performance_mu(x, shape1, shape2, stretch, x_min, x_max)
     zero_idx <- x < x_min | x > x_max
     mu_species <- mu %>%
       map_dbl(function(x){
         rnorm(n = 1, mean = x, sd = (1+x)^1*1/nu) %>%
           (function(z) ifelse(z < 0, 0, z)) %>%
-          (function(r) ifelse(rbinom(1, 1, theta) == 0, 0, r)) #zero-inflated part
+          (function(r) ifelse(rbinom(1, 1, plogis(beta_0 + beta_1 * x)) == 0, 0, r)) #zero-inflated part
       }) %>%
       replace(zero_idx, 0)
 
@@ -197,20 +198,21 @@ posterior_quantile <- function(x, p, par_df){
     shape1 <- par_df$shape1[.x]
     shape2 <- par_df$shape2[.x]
     stretch <- par_df$stretch[.x]
-    theta <- par_df$theta[.x]
+    beta_0 <- par_df$beta_0[.x]
+    beta_1 <- par_df$beta_1[.x]
     nu <- par_df$nu[.x]
     mu <- performance_mu(x, shape1, shape2, stretch, x_min, x_max)
     lower <- mu %>%
       map_dbl(function(x){
         qnorm(p = low_q, mean = x, sd = (1+x)^1*1/nu) %>%
           (function(z) ifelse(z < 0, 0, z)) %>%
-          (function(r) ifelse(rbinom(1, 1, theta) == 0, 0, r)) #zero-inflated part
+          (function(r) ifelse(rbinom(1, 1, plogis(beta_0 + beta_1 * x)) == 0, 0, r)) #zero-inflated part
       })
     upper <- mu %>%
       map_dbl(function(x){
         qnorm(p = hi_q, mean = x, sd = (1+x)^1*1/nu) %>%
           (function(z) ifelse(z < 0, 0, z)) %>%
-          (function(r) ifelse(rbinom(1, 1, theta) == 0, 0, r)) #zero-inflated part
+          (function(r) ifelse(rbinom(1, 1, plogis(beta_0 + beta_1 * x)) == 0, 0, r)) #zero-inflated part
       })
     tibble(x = x,
            lower = lower,
@@ -285,7 +287,8 @@ generate_parameters <- function(
   max_pr_mu,
   nu_pr_shape,
   nu_pr_scale,
-  theta_pr,
+  beta0_pr,
+  beta1_pr,
   pr_sig = 1
 ){
 
@@ -305,9 +308,10 @@ generate_parameters <- function(
   mu_max <- rnorm(1, max_pr_mu, mu_sig)
   x_max <- rnorm(n_spp, mu_max, pr_sig)
 
-  mu_theta <- rnorm(1, mean = theta_pr, sd = pr_sig)
-  logit_theta <- rnorm(n_spp, mu_theta, 1)
-  theta <- plogis(logit_theta)
+  mu_beta0 <- rnorm(1, mean = beta0_pr, sd = pr_sig)
+  mu_beta1 <- rnorm(1, mean = beta1_pr, sd = pr_sig)
+  beta_0 <- rnorm(n_spp, mu_beta0, 1)
+  beta_1 <- rnorm(n_spp, mu_beta1, 1)
 
   ed_test <- 1:n_spp %>% map_lgl(~x_min[.x] > x_max[.x]) %>% sum()
   if(ed_test > 0){
@@ -324,8 +328,8 @@ generate_parameters <- function(
   #   rep(n_spp)
   #
   list(shape1 = shape1, shape2 = shape2, stretch = stretch, x_min = x_min, x_max = x_max,
-       nu = nu, theta = theta, mu_shape1 = mu_shape1, mu_shape2 = mu_shape2,
-       mu_stretch = mu_stretch, mu_min = mu_min, mu_max = mu_max, mu_nu = mu_nu, mu_theta
+       nu = nu, beta_0 = beta_0, beta_1 = beta_1, mu_shape1 = mu_shape1, mu_shape2 = mu_shape2,
+       mu_stretch = mu_stretch, mu_min = mu_min, mu_max = mu_max, mu_nu = mu_nu, mu_beta0, mu_beta1
   )
 }
 
@@ -360,7 +364,8 @@ simulate_data <- function(
   max_pr_mu = 5,
   nu_pr_shape = 4,
   nu_pr_scale = 2,
-  theta_pr = 0,
+  beta0_pr = 0,
+  beta1_pr = 1,
   pr_sig = 1
 ){
   true_params <- generate_parameters(
@@ -373,7 +378,8 @@ simulate_data <- function(
     max_pr_mu = max_pr_mu,
     nu_pr_shape = nu_pr_shape,
     nu_pr_scale = nu_pr_scale,
-    theta_pr = theta_pr,
+    beta0_pr = beta0_pr,
+    beta1_pr = beta1_pr,
     pr_sig = pr_sig
   )
 
@@ -402,7 +408,8 @@ simulate_data <- function(
         x_min = true_params$x_min[.x],
         x_max = true_params$x_max[.x],
         nu = true_params$nu[.x],
-        theta = true_params$theta[.x],
+        beta_0 = true_params$beta_0[.x],
+        beta_1 = true_params$beta_1[.x],
         species = .x,
         draw = 1
       )
