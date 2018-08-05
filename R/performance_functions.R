@@ -211,8 +211,8 @@ posterior_quantile <- function(x, p, par_df){
     upper <- mu %>%
       map_dbl(function(x){
         qnorm(p = hi_q, mean = x, sd = (1+x)^1*1/nu) %>%
-          (function(z) ifelse(z < 0, 0, z)) %>%
-          (function(r) ifelse(rbinom(1, 1, plogis(beta_0 + beta_1 * x)) == 0, 0, r)) #zero-inflated part
+          (function(z) ifelse(z < 0, 0, z))
+          #(function(r) ifelse(rbinom(1, 1, plogis(beta_0 + beta_1 * x)) == 0, 0, r)) #zero-inflated part
       })
     tibble(x = x,
            lower = lower,
