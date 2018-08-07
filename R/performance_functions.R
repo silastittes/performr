@@ -201,8 +201,9 @@ posterior_quantile <- function(x, p, par_df){
     beta_0 <- par_df$beta_0[.x]
     beta_1 <- par_df$beta_1[.x]
     nu <- par_df$nu[.x]
-    mu <- performance_mu(x, shape1, shape2, stretch, x_min, x_max)
     zero_idx <- x < x_min | x > x_max
+    mu <- performance_mu(x, shape1, shape2, stretch, x_min, x_max) %>%
+      replace(zero_idx, 0)
     lower <- mu %>%
       map_dbl(function(x){
         qnorm(p = low_q, mean = x, sd = (1+x)^1*1/nu) %>%
