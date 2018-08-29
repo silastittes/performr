@@ -13,6 +13,7 @@ How to use `performr` package
 ```{r, echo=FALSE}
 #load library
 suppressWarnings(suppressMessages(library(performr)))
+suppressWarnings(suppressMessages(library(tidyverse)))
 suppressMessages(library(ggridges))
 theme_set(theme_minimal())
 
@@ -190,12 +191,11 @@ max_df %>%
 Cool, looks like the 95% credible interval captures the true value in each case. It would be easy to extend this approach using a function and quickly verify each parameter. Notice the increased uncertainty in posteriors further from the treatments on the x-axis ... Love that!
 
 
-Posterior predictive data generation
+Visualize uncertainty in curves predictions
 ---------------
 
-The whole concept of posterior prediction and generating data from the model is one of my favorite things about Bayesian statistics. It allows for a lot of creativity in how we check our assumptions. We can generate data from the model using this approach:
 
-First, let's generate a tidy data frame with all the parameters, plus some valuable derived parameters, like the optimum, area, and breadth for each species:
+First, let's generate a tidy data frame with all the parameters, plus some valuable derived parameters, like the optimum, area, and breadth for each species. We will use this data frame for other tasks below as well.
 ```{r}
 head(
   tidy_perf <- 
@@ -207,8 +207,7 @@ head(
 ```
 
 
-
-
+The next step is to generate prediction intervals using the `predict_interval()` function. The function generates posterior quantiles for each set of posterior draws specified (`x_draws`), and averages over the quantiles. The argument `p` can takes a vector of credible levels, which can be modified to consider other and/or additional levels.
 ```{r}
 #set up sequence from smallest to largest x 
 x_seq = seq(min(draws$x_min),
@@ -218,39 +217,43 @@ x_seq = seq(min(draws$x_min),
 #sub-sample draws randomly
 poly_draws <- sample(1:ndraws, 100)
 
+head(
+  creds <- 
+    predict_interval(
+      x = x_seq,
+      spp = spp,
+      par_df = tidy_perf,
+      x_draws = poly_draws,
+      p = c(0.95, 0.5))
+)
 
-test <- 
-  predict_interval(
-    x = x_seq,
-    spp = spp,
-    par_df = perf_df,
-    x_draws = poly_draws,
-    p = c(0.95, 0.5))
+```
 
-test_spp <- test %>%
-  filter(spp == unique(test$species)[1])
+Notice the output of `predict_interval()` also produces a "mu" column, which contains the mean preduction of the curve for each input species.
 
-pred_plot <- ggplot(data = filter(test, level == 95)) +
-  facet_wrap(~species, scales = "free_y") +
+Here is an example of how the data could be plotted. Other approach using `plot()` are certainly possible:
+```{r}
+ggplot(data = filter(creds, level == 95)) +
   geom_ribbon(
-    aes(x = x + mean(dro_df$treat_org), 
+    aes(x = x, 
         ymin = upper, 
         ymax = lower,
         fill = species),
     alpha = 0.3,
     inherit.aes = F) +
   geom_ribbon(
-    data = filter(test, level == 50),
-    aes(x = x + mean(dro_df$treat_org), 
+    data = filter(creds, level == 50),
+    aes(x = x, 
         ymin = upper, 
         ymax = lower,
         fill = species), 
     inherit.aes = F,
     alpha = 0.7) +
+  geom_line(aes(x, mu), inherit.aes = T, colour = "white", lwd = 1) +
   geom_point(
-    data = mutate(dro_df, species = spec_loc), 
-    aes(treatment + mean(dro_df$treat_org), 
-        sum_n,
+    data = perf_df$sim_data, 
+    aes(x, 
+        trait,
         alpha = 0.5), 
     inherit.aes = F,
     colour = "grey70") +
@@ -259,6 +262,10 @@ pred_plot <- ggplot(data = filter(test, level == 95)) +
 ```
 
 
+Posterior predictive data generation
+---------------
+
+The whole concept of posterior prediction and generating data from the model is one of my favorite things about Bayesian statistics. It allows for a lot of creativity in how we check our assumptions. We can generate data from the model using this approach:
 
 
 
