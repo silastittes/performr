@@ -140,10 +140,17 @@ The output is the same as any Stan model.
 knitr::kable(rstan::summary(perf_stan)$summary, digits = 3)
 ```
 
+
 We can access the posterior draws using `rstan::extract()`, which produces a list containing draws for each parameter of the model.
 ```{r}
 draws <- rstan::extract(perf_stan)
+ndraws <- length(draws$lp__)
 ```
+
+
+
+
+
 
 
 There are a lot of good packages out there for visualizing posteriors. I haven't learned any of them yet, but here's a quick approach I'm fond of:
@@ -161,6 +168,7 @@ max_df %>%
   xlab(param) +
   theme(legend.position = "none")
 ```
+
 
 Quickly, let's eyeball how these marginal posteriors for the x_max parameter (where performance falls to zero above the optimum) for each species.
 
@@ -198,6 +206,62 @@ head(
 )
 ```
 
+
+
+
+```{r}
+#set up sequence from smallest to largest x 
+x_seq = seq(min(draws$x_min),
+            max(draws$x_max),
+            length.out = 100)
+
+#sub-sample draws randomly
+poly_draws <- sample(1:ndraws, 100)
+
+
+test <- 
+  predict_interval(
+    x = x_seq,
+    spp = spp,
+    par_df = perf_df,
+    x_draws = poly_draws,
+    p = c(0.95, 0.5))
+
+test_spp <- test %>%
+  filter(spp == unique(test$species)[1])
+
+pred_plot <- ggplot(data = filter(test, level == 95)) +
+  facet_wrap(~species, scales = "free_y") +
+  geom_ribbon(
+    aes(x = x + mean(dro_df$treat_org), 
+        ymin = upper, 
+        ymax = lower,
+        fill = species),
+    alpha = 0.3,
+    inherit.aes = F) +
+  geom_ribbon(
+    data = filter(test, level == 50),
+    aes(x = x + mean(dro_df$treat_org), 
+        ymin = upper, 
+        ymax = lower,
+        fill = species), 
+    inherit.aes = F,
+    alpha = 0.7) +
+  geom_point(
+    data = mutate(dro_df, species = spec_loc), 
+    aes(treatment + mean(dro_df$treat_org), 
+        sum_n,
+        alpha = 0.5), 
+    inherit.aes = F,
+    colour = "grey70") +
+  theme(legend.position = "none")
+
+```
+
+
+
+
+
 Now we can generate pseudo observed data from the posterior draws. 
 ```{r}
 tidy_perf %>%
@@ -205,6 +269,7 @@ tidy_perf %>%
   posterior_predict(par_df = .) %>%
   head()
 ```
+
 By default, the x-axis will be constructed as a sequence of 100 values that start from the minimum posterior draw value of x_min and end at the maximum of x_max. This default can be changed using the x argument. Filtering for posterior draws is not required before using the function -- posterior predictive data will be produced for every posterior draw passed to `par_df`.
 
 If you have questions, comments, or concerns, please get in touch. I would be excited to discuss! 
