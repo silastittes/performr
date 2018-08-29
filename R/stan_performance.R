@@ -1,7 +1,6 @@
 #' Performance curve inference with Stan
 #'
 #' Runs performance/tolerance curve model
-#' @import magrittr
 #' @import dplyr
 #' @param df Data frame containing response, treatment, and groups of interest.
 #' @param response the unquoted column name containing the response trait (zero and positive real numbers expected).
