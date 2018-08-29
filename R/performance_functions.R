@@ -251,6 +251,40 @@ predictions <- function(x, spp, par_df, x_draws, p){
 }
 
 
+#' Improved method to ccalculate prediction quantiles
+#'
+#' Generate performance prediction quantiles over multiple posterior draws. Good for visualzation.
+#' @import purrr
+#' @import magrittr
+#' @import dplyr
+#' @param spp The species to produce predictions over, one at a time is recommended.
+#' @param par_df A data frame like the one produced by perform_df(). MUST contain columns named: draw, species, x_min, x_max, shape1, shape2, stretch, and nu.
+#' c p Vector of probability values passed to qnorm -- the amount of probability density right of the returned quantiles
+#' @param x A vector of values to evaluate performance over
+#' @return A tidy data frame, containing averaged upper and lower quantiles along the environmental axis, and corresponding points for the performance axis.
+#' @export
+#'
+
+predict_interval <- function (x, spp, par_df, x_draws, p){
+  if (missing(x)) {
+    x <- seq(min(par_df$x_min), max(par_df$x_max), length.out = 100)
+  }
+  sub_df <- par_df %>% filter(draw %in% x_draws)
+
+  p %>% map_df(~{
+    posterior_quantile(x = x, par_df = sub_df, p = .x) %>%
+      group_by(species, x) %>%
+      summarise_all(.funs = mean) %>%
+      mutate(level = .x) %>%
+      arrange(x) %>%
+      select(-draw) %>%
+      mutate(level = round(.x * 100, 0))
+  }) %>%
+    arrange(species, x)
+}
+
+
+
 
 #' Draw parameter values from priors for simulation
 #'
