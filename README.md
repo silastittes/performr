@@ -3,6 +3,7 @@
 performr 
 ========
 
+
 R package implementing a probabilistic model of continuous environmental performance curves. 
 
 Publications using performr are coming to a theater near you.
