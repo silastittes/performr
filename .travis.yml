@@ -1,9 +1,11 @@
 language: r
 sudo: false
-r: devel
 cache: packages
+dist: trusty
 
 latex: true
+r_build_args: '--no-build-vignettes'
+r_check_args: '--ignore-vignettes'
 
 r_github_packages:
   - jimhester/covr
@@ -19,11 +21,10 @@ matrix:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-         packages:
+          packages:
             - g++-7
       env:
         - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
-
 
 before_install:
   - mkdir -p ~/.R/
