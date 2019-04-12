@@ -4,8 +4,7 @@ BOOST_NOT_IN_BH_SRC = `"$(R_HOME)/bin$(R_ARCH_BIN)/Rscript" --vanilla -e "cat(sy
 
 PKG_CPPFLAGS = -I"../inst/include" -I"$(STANHEADERS_SRC)" -DBOOST_DISABLE_ASSERTS -DEIGEN_NO_DEBUG -DBOOST_MATH_OVERFLOW_ERROR_POLICY=errno_on_error
 
-
-CXX14="$(BINPREF)g++ $(M_ARCH)"
+CXX14 = $(BINPREF)g++ -m$(WIN)
 CXX_STD = CXX14
 CXX14FLAGS="-O2 -Wall"
 #CXX14STD=-std=gnu1y
