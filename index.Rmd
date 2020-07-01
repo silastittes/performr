@@ -249,7 +249,7 @@ ggplot(data = filter(creds, level == 95)) +
         fill = species), 
     inherit.aes = F,
     alpha = 0.7) +
-  geom_line(aes(x, mu), inherit.aes = T, colour = "white", lwd = 1) +
+  geom_line(aes(x, mu, group = species), inherit.aes = F, colour = "white", lwd = 1) +
   geom_point(
     data = perf_df$sim_data, 
     aes(x, 
@@ -287,7 +287,7 @@ If you have questions, comments, or concerns, please get in touch. I would be ex
 <div id="sessioninfo" class="collapse">
 
 ```{r}
-writeLines(readLines(file.path(Sys.getenv("HOME"), ".R/Makevars")))
+#writeLines(readLines(file.path(Sys.getenv("HOME"), ".R/Makevars")))
 
 devtools::session_info()
 ```
