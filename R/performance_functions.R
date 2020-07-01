@@ -41,9 +41,7 @@ perform_df <- function(stan_out, species_order){
       group_by(species) %>%
       mutate(draw = 1:n())
   }) %>%
-    do.call(cbind, .) %>%
-    select(-starts_with("species")) %>%
-    select(-matches("draw[0-9]")) %>%
+    reduce(full_join, by = c("species", "draw")) %>%
     mutate(
       maxima = (((shape1 - 1)/(shape1*shape2 - 1))^(1/shape1) * (x_max - x_min) + x_min),
       breadth = (x_max - x_min),
