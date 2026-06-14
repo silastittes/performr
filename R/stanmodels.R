@@ -19,6 +19,6 @@ get_perform_model <- function() {
     stop("Could not locate perform.stan in the installed performr package.", call. = FALSE)
   }
 
-  .pkg.env$perform_model <- cmdstanr::cmdstan_model(stan_file = stan_file)
+  .pkg.env$perform_model <- cmdstanr::cmdstan_model(stan_file = stan_file, dir = tempdir())
   .pkg.env$perform_model
 }
