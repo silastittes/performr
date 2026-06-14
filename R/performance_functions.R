@@ -28,12 +28,14 @@ perform_df <- function(stan_out, species_order){
   #stan_out output from gen_tolerance()
   #species_order vector of desired labels matching group_ids used in gen_tolerance()
 
-  new_post <- stan_out %>% rstan::extract()
+  new_post <- posterior::as_draws_df(stan_out$draws(variables = c("x_min", "x_max", "shape1", "shape2", "stretch", "nu")))
+  new_post <- new_post %>% select(-.chain, -.iteration, -.draw)
 
   params <- c("x_min", "x_max", "shape1", "shape2", "stretch", "nu")
 
-  par_df <- params %>% map( ~{
-    new_post[[.x]] %>%
+  par_df <- params %>% map(~{
+    cols <- grep(paste0("^", .x, "\\[[0-9]+\\]$"), names(new_post), value = TRUE)
+    new_post[cols] %>%
       data.frame() %>%
       set_colnames(species_order) %>%
       gather("species", x) %>%
@@ -77,7 +79,7 @@ map_performance <- function(x = seq(0, 1, length.out = 100), par_df){
     stretch <- par_df$stretch[.x]
     xs <- x*(x_max - x_min) + x_min
     mod_fit <- stretch*((shape1*shape2*x^(shape1-1)) * (1-x^shape1)^(shape2-1))
-    data_frame(species = species, x = xs, y = mod_fit, draw = draw_x)
+    tibble(species = species, x = xs, y = mod_fit, draw = draw_x)
   })
 }
 
@@ -107,7 +109,7 @@ map_performance_fixed <- function(x, par_df){
     shape2 <- par_df$shape2[.x]
     stretch <- par_df$stretch[.x]
     mod_fit <-performance_mu(x, shape1, shape2, stretch, x_min, x_max)
-    data_frame(species = species, x = x, y = mod_fit, draw = draw_x)
+    tibble(species = species, x = x, y = mod_fit, draw = draw_x)
   })
 }
 

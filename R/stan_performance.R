@@ -72,22 +72,34 @@ stan_performance <- function(df, response,
     nu_pr_scale = nu_pr_scale
   )
 
-  if(is.null(file_id)){
-    stan_out <- sampling(
-      stanmodels$perform,
+  model <- get_perform_model()
+  warmup <- floor(iter / 2)
+  sample_iters <- iter - warmup
+
+  if (is.null(file_id)) {
+    stan_out <- model$sample(
       data = stan_in,
-      control = list(adapt_delta = adapt_delta, max_treedepth = max_treedepth),
-      iter = iter, chains = chains, thin = thin,
+      chains = chains,
+      iter_warmup = warmup,
+      iter_sampling = sample_iters,
+      thin = thin,
+      adapt_delta = adapt_delta,
+      max_treedepth = max_treedepth,
       ...
     )
   } else {
-    stan_out <- sampling(
-      stanmodels$perform,
+    stan_out <- model$sample(
       data = stan_in,
-      control = list(adapt_delta = adapt_delta, max_treedepth = max_treedepth),
-      iter = iter, chains = chains, thin = thin,
-      sample_file = paste0(eval(substitute(file_id)), ".samples"), ...
+      chains = chains,
+      iter_warmup = warmup,
+      iter_sampling = sample_iters,
+      thin = thin,
+      adapt_delta = adapt_delta,
+      max_treedepth = max_treedepth,
+      output_basename = paste0(eval(substitute(file_id))),
+      ...
     )
   }
+
   stan_out
 }

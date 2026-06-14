@@ -2,14 +2,12 @@ Package: performr
 Version: 0.2
 Title: Fit probabilistic performance curve model
 Description: performr provides a number of R functions to fit (calling Stan) and describe performance curves using a specific model.
-Authors@R: person("Silas", "Tittes", , "silas.tittes@gmail.com", c("aut", "cre"))
+Authors@R: person("Silas", "Tittes", email = "silas.tittes@gmail.com", role = c("aut", "cre"))
 License: GPL (>=3)
 Encoding: UTF-8
 LazyData: true
 ByteCompile: true
-Depends: R (>= 3.4.0), Rcpp (>= 0.12.0), dplyr, bindr, tidyr, purrr, stringr, magrittr, methods, truncnorm
-Imports: rstan (>= 2.18.1), rstantools (>= 1.5.0)
-LinkingTo: StanHeaders  (>= 2.18.0), rstan (>= 2.18.1), BH (>= 1.66.0), Rcpp (>= 0.12.0), RcppEigen (>= 0.3.3.3.0)
-SystemRequirements: GNU make
-NeedsCompilation: yes
-RoxygenNote: 6.0.1.9000
+Depends: R (>= 4.0.0), dplyr, tidyr, purrr, stringr, magrittr, methods, truncnorm
+Imports: cmdstanr, posterior, dplyr, tidyr, purrr, stringr, magrittr, methods, truncnorm
+SystemRequirements: CmdStan, C++14 toolchain
+RoxygenNote: 7.0.0
