@@ -199,14 +199,14 @@ x_seq <- seq(min(perf_df$sim_data$x),
 #sub-sample draws randomly
 poly_draws <- sample(1:ndraws, 100)
 
-head(
-  creds <-
-    predict_interval(
-      x = x_seq,
-      par_df = tidy_perf,
-      x_draws = poly_draws,
-      p = c(0.95, 0.5))
-)
+creds <-
+  predict_interval(
+    x = x_seq,
+    par_df = tidy_perf,
+    x_draws = poly_draws,
+    p = c(0.95, 0.5))
+
+creds %>% group_by(species, level) %>% slice_head(n = 1)
 
 ```
 

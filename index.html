@@ -997,24 +997,24 @@ x_seq &lt;- seq(min(perf_df$sim_data$x),
 #sub-sample draws randomly
 poly_draws &lt;- sample(1:ndraws, 100)
 
-head(
-  creds &lt;-
-    predict_interval(
-      x = x_seq,
-      par_df = tidy_perf,
-      x_draws = poly_draws,
-      p = c(0.95, 0.5))
-)</code></pre>
+creds &lt;-
+  predict_interval(
+    x = x_seq,
+    par_df = tidy_perf,
+    x_draws = poly_draws,
+    p = c(0.95, 0.5))
+
+creds %&gt;% group_by(species, level) %&gt;% slice_head(n = 1)</code></pre>
 <pre><code>## # A tibble: 6 × 6
-## # Groups:   species [1]
-##   species     x    lower  upper     mu level
-##   &lt;chr&gt;   &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;
-## 1 1       -4.72 0        0.135  0.0231    95
-## 2 1       -4.72 0.000850 0.0614 0.0231    50
-## 3 1       -4.64 0        0.143  0.0299    95
-## 4 1       -4.64 0.00269  0.0688 0.0299    50
-## 5 1       -4.57 0        0.153  0.0381    95
-## 6 1       -4.57 0.00637  0.0776 0.0381    50</code></pre>
+## # Groups:   species, level [6]
+##   species     x     lower  upper      mu level
+##   &lt;chr&gt;   &lt;dbl&gt;     &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;
+## 1 1       -4.72 0.000850  0.0614 0.0231     50
+## 2 1       -4.72 0         0.135  0.0231     95
+## 3 2       -4.72 0.0780    0.121  0.0993     50
+## 4 2       -4.72 0.0374    0.161  0.0993     95
+## 5 3       -4.72 0.0000340 0.0236 0.00246    50
+## 6 3       -4.72 0         0.0638 0.00246    95</code></pre>
 <p>Notice the output of <code>predict_interval()</code> also produces a
 “mu” column, which contains the mean preduction of the curve for each
 input species.</p>
