@@ -191,9 +191,9 @@ head(
 
 The next step is to generate prediction intervals using the `predict_interval()` function. The function generates posterior quantiles for each set of posterior draws specified (`x_draws`), and averages over the quantiles. The argument `p` can takes a vector of credible levels, which can be modified to consider other and/or additional levels.
 ```{r}
-#set up sequence from smallest to largest x
-x_seq <- seq(min(tidy_perf$x_min),
-             max(tidy_perf$x_max),
+#set up sequence over the observed data range
+x_seq <- seq(min(perf_df$sim_data$x),
+             max(perf_df$sim_data$x),
              length.out = 100)
 
 #sub-sample draws randomly
