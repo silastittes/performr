@@ -30,8 +30,12 @@ Installation
 
 Installing `performr` is done using the following command:
 ```{r, eval=FALSE}
-#install
-devtools::install_github("silastittes/performr", local = FALSE)
+#install performr
+devtools::install_github("silastittes/performr")
+
+#install cmdstanr and CmdStan (required to compile and run the Stan model)
+install.packages("cmdstanr", repos = c("https://stan-dev.r-universe.dev", getOption("repos")))
+cmdstanr::install_cmdstan()
 
 #load other libraries used below
 library(performr)
@@ -40,17 +44,9 @@ library(ggridges)
 theme_set(theme_minimal())
 ```
 
-As the model is written in Stan, it requires a c++ compiler. For Apple and PC users, you likely need to install one. If the installation command above fails, Mac users can open their terminal and type:
+`performr` now uses [cmdstanr](https://mc-stan.org/cmdstanr/) as its Stan backend. Unlike the previous rstan-based version, the Stan model is compiled on first use rather than at package install time, so the install step above should be fast. The `cmdstanr::install_cmdstan()` call downloads and builds CmdStan — you only need to do this once. Run `cmdstanr::cmdstan_version()` to confirm everything is set up correctly.
 
-```{r, engine='bash', eval = F}
-xcode-select --install
-```
-
-This should open some dialogue to install the Xcode developer tools. Follow the prompts to install. Once the install finishes, try the `install_github()` command again. At this point, I have not tested the package on PCs, but I would guess a similar step is required (please email me if you have success on a PC!).
-
-Linux users can likely run the command as-is, or by using `devtools::install_github("silastittes/performr")`, which would use the pre-compiled version that my Linux machine built (Linux Mint 18.3). 
-
-Last installation detail, `performr` depends on several packages. These can take some time to install, but usually goes smoothly as long as your R is up to date! If you run into troubles, check the R session info at the bottom of this page. Compare to your own session info for missing packages and older package versions.
+`performr` depends on several R packages. These can take some time to install, but usually goes smoothly as long as your R is up to date! If you run into troubles, check the R session info at the bottom of this page.
 
 
 Simulating example data 
@@ -121,12 +117,12 @@ Although it won't appear on the webpage (the code above is not being evaluated) 
 
 We can read in the model from file as such:
 ```{r}
-perf_stan <- 
-  rstan::read_stan_csv(
-    csvfiles = c(
-      "stan_example.samples_1.csv", 
-      "stan_example.samples_2.csv", 
-      "stan_example.samples_3.csv", 
+perf_stan <-
+  cmdstanr::read_cmdstan_csv(
+    files = c(
+      "stan_example.samples_1.csv",
+      "stan_example.samples_2.csv",
+      "stan_example.samples_3.csv",
       "stan_example.samples_4.csv"
     )
   )
@@ -136,16 +132,15 @@ perf_stan <-
 Output
 ---------------
 
-The output is the same as any Stan model. 
+The output is the same as any Stan model.
 ```{r}
-knitr::kable(rstan::summary(perf_stan)$summary, digits = 3)
+knitr::kable(perf_stan$summary(), digits = 3)
 ```
 
 
-We can access the posterior draws using `rstan::extract()`, which produces a list containing draws for each parameter of the model.
+We can access the number of posterior draws directly from the model object.
 ```{r}
-draws <- rstan::extract(perf_stan)
-ndraws <- length(draws$lp__)
+ndraws <- posterior::ndraws(perf_stan$draws())
 ```
 
 
@@ -159,8 +154,9 @@ There are a lot of good packages out there for visualizing posteriors. I haven't
 #choose parameter
 param <- "x_max"
 
-max_df <- draws[[param]] %>%
-  as_tibble() %>%
+max_df <- perf_stan$draws(variables = param) %>%
+  posterior::as_draws_df() %>%
+  select(-.chain, -.iteration, -.draw) %>%
   gather(species, value)
 
 max_df %>%
@@ -209,10 +205,10 @@ head(
 
 The next step is to generate prediction intervals using the `predict_interval()` function. The function generates posterior quantiles for each set of posterior draws specified (`x_draws`), and averages over the quantiles. The argument `p` can takes a vector of credible levels, which can be modified to consider other and/or additional levels.
 ```{r}
-#set up sequence from smallest to largest x 
-x_seq = seq(min(draws$x_min),
-            max(draws$x_max),
-            length.out = 100)
+#set up sequence from smallest to largest x
+x_seq <- seq(min(tidy_perf$x_min),
+             max(tidy_perf$x_max),
+             length.out = 100)
 
 #sub-sample draws randomly
 poly_draws <- sample(1:ndraws, 100)
